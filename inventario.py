@@ -19,9 +19,9 @@ class inventario:
         self.frame_menu.grid(row=0, column=0, sticky="ns", padx=0, pady=0)
 
         self.btn_listaInventario = ctk.CTkButton(
-            self.frame_menu, 
-            text="INVENTARIO", 
-            fg_color="#3E3E3E", 
+            self.frame_menu,
+            text="INVENTARIO",
+            fg_color="#3E3E3E",
             text_color="#F2F2F2",
             hover_color="#505050",
             command=lambda: self.frameCentral()
@@ -29,9 +29,9 @@ class inventario:
         self.btn_listaInventario.grid(row=0, column=0, padx=20, pady=20)
 
         self.btn_listaInventario = ctk.CTkButton(
-            self.frame_menu, 
-            text="REGISTRAR PRODUCTO", 
-            fg_color="#3E3E3E", 
+            self.frame_menu,
+            text="REGISTRAR PRODUCTO",
+            fg_color="#3E3E3E",
             text_color="#F2F2F2",
             hover_color="#505050",
             command=lambda: self.frameProdicto()
@@ -51,7 +51,7 @@ class inventario:
 
     def frameCentral(self):
         self.limpiar_frame_central()
-        # frame del centro 
+        # frame del centro
         self.fm_mostrar = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.fm_mostrar.pack(pady=20, fill="x", padx=20)
 
@@ -92,14 +92,14 @@ class inventario:
 
         style = ttk.Style()
         style.theme_use("default")
-        style.configure("Treeview", 
-                        background="#F2F2F2", 
-                        foreground="black", 
-                        rowheight=25, 
+        style.configure("Treeview",
+                        background="#F2F2F2",
+                        foreground="black",
+                        rowheight=25,
                         fieldbackground="#F2F2F2")
         style.map("Treeview", background=[('selected', '#3E3E3E')])
 
-        self.tablaProductos.configure(height=15) 
+        self.tablaProductos.configure(height=15)
         self.tablaProductos.pack(fill="x", padx=20, pady=20)
 
         self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
@@ -117,18 +117,19 @@ class inventario:
         self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="MOVE A OFERTA", width=150)
         self.btn_oferta.grid(row=1, column=1, padx=10, pady=10)
 
-        self.btn_PROVEDORES = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="CORREO A PROVEEDORES", width=150)
+        self.btn_PROVEDORES = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="CORREO A PROVEEDORES", width=150,
+            command=lambda: self.EnbiarCorreo())
         self.btn_PROVEDORES.grid(row=0, column=2, padx=10, pady=10)
 
 
-        
+
     def frameProdicto(self):
         self.limpiar_frame_central()
 
         self.fm_mostrar = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.fm_mostrar.pack(pady=20, fill="x", padx=20)
 
-        apartado_producto = ctk.CTkLabel(self.fm_mostrar, text="INVENTARIO", text_color="#1A1A1A", font=("ARIAL", 40))
+        apartado_producto = ctk.CTkLabel(self.fm_mostrar, text="REGISTRO DE PRODUCTOS", text_color="#1A1A1A", font=("ARIAL", 40))
         apartado_producto.grid(row=0, column=0, padx=10, pady=10)
 
         self.frame_busqueda = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
@@ -141,10 +142,8 @@ class inventario:
         self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
 
         self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E")
-        self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)   
-
+        self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)
         colupnas = ("CLAVE", "MODELO", "MARCA", "SECCION", "CATEGORIA")
-
         self.tablaProductos = ttk.Treeview(self.frame_contenido, columns=colupnas, show="headings")
 
         self.tablaProductos.heading("CLAVE", text="CLAVE")
@@ -161,14 +160,14 @@ class inventario:
 
         style = ttk.Style()
         style.theme_use("default")
-        style.configure("Treeview", 
-                        background="#F2F2F2", 
-                        foreground="black", 
-                        rowheight=25, 
+        style.configure("Treeview",
+                        background="#F2F2F2",
+                        foreground="black",
+                        rowheight=25,
                         fieldbackground="#F2F2F2")
         style.map("Treeview", background=[('selected', '#3E3E3E')])
 
-        self.tablaProductos.configure(height=15) 
+        self.tablaProductos.configure(height=15)
         self.tablaProductos.pack(fill="x", padx=20, pady=20)
 
         self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
@@ -180,7 +179,7 @@ class inventario:
         self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150)
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="AGREGAR", 
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="AGREGAR",
                                         width=150,
                                         command=lambda: self.AgregarProducto()
                                         )
@@ -198,13 +197,13 @@ class inventario:
         self.en_marca = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
         self.en_marca.pack(padx=10, pady=5)
 
-        opciones_seccion = ["Caballeros", "Damas", "Niños"] 
+        opciones_seccion = ["Caballeros", "Damas", "Niños"]
 
         self.lbl_seccion = ctk.CTkLabel(self.create_producto, text="Sección:", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
         self.lbl_seccion.pack(padx=10, pady=5)
 
         self.combo_seccion = ctk.CTkComboBox(
-            self.create_producto, 
+            self.create_producto,
             values=opciones_seccion,
             corner_radius=0,
             fg_color="#F2F2F2",
@@ -214,7 +213,7 @@ class inventario:
         )
         self.combo_seccion.pack(padx=10, pady=5)
 
-        self.btn_registrar = ctk.CTkButton(self.create_producto, text="REGISTRAR", fg_color="#3E3E3E", 
+        self.btn_registrar = ctk.CTkButton(self.create_producto, text="REGISTRAR", fg_color="#3E3E3E",
                                         width=200, height=70, font=("Arial", 15),
                                         command=lambda: self.insertarDatosProducto())
         self.btn_registrar.pack(padx=10, pady=5)
@@ -226,13 +225,48 @@ class inventario:
 
         print(f"modelo {modelo}, marca {marca}, seccion {combo_box}")
 
+    def EnbiarCorreo(self):
+        ventana_correo = ctk.CTkToplevel()
+        ventana_correo.geometry("1200x1000")
+        ventana_correo.title("PEDIR PRODUCTO")
+        ventana_correo.configure(fg_color="#E5E5E5")
+
+        colupnas = ("NOMBRE", "CORREO")
+        provedores_tabla = ttk.Treeview(ventana_correo, columns=colupnas, show="headings")
+
+        provedores_tabla.heading("NOMBRE", text="NOMBRE")
+        provedores_tabla.heading("CORREO", text="CORREO")
+        provedores_tabla.column("NOMBRE", width=100)
+        provedores_tabla.column("CORREO", width=80, anchor="center")
+        provedores_tabla.pack(pady=20, padx=20, fill="both", expand=True)
+
+        correo_destino = ctk.CTkEntry(ventana_correo, placeholder_text="CORREO", text_color="#FFFFFF", width=600, height=70, font=("Arial", 15))
+        correo_destino.pack(padx=10, pady=5)
+
+        mensaje = ctk.CTkTextbox(ventana_correo, text_color="#FFFFFF", width=600, height=200, font=("Arial", 15),
+            )
+        mensaje.pack(padx=10, pady=5)
+
+        def enviar():
+            from FuncionesEspeciales import F_embiarCorreo
+
+            correo = correo_destino.get()
+            contenido = mensaje.get("0.0", "end")
+            azunto = "Reabastecimineto de algun tipo de producto: "
+            F_e.embiarCorreo(correo, contenido, azunto)
+
+        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR", fg_color="#3E3E3E",
+                                        width=200, height=70, font=("Arial", 15),
+                                        command=lambda: enviar())
+        emviar.pack(padx=10, pady=5)
 
 
 
 
-        
 
 
-        
+
+
+
 
 obj = inventario()
