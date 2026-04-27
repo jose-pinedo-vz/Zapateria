@@ -12,15 +12,10 @@ class Ventana_GUI():
         self.COLOR_FONDO_BLANCO= "#F2F2F2"
         self.COLOR_TEXTO_NEGRO = "#1A1A1A"
 
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        ruta_absoluta = os.path.join(base_path,"Logo.ico")
-        print(f"Buscando en: {ruta_absoluta}")
-
         self.Ventana=ctk.CTk()
         self.Ventana.geometry("1000x700")
         self.Ventana.title("Menu Principal")
         self.Ventana.configure(fg_color=self.COLOR_SECUNDARIO)
-        self.Ventana.iconbitmap(ruta_absoluta)
 
         self.Frame_principal=ctk.CTkFrame(self.Ventana,
                                           fg_color=self.COLOR_FONDO_BLANCO,
