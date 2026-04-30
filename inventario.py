@@ -227,39 +227,85 @@ class inventario:
 
     def EnbiarCorreo(self):
         ventana_correo = ctk.CTkToplevel()
-        ventana_correo.geometry("1200x1000")
-        ventana_correo.title("PEDIR PRODUCTO")
+        ventana_correo.geometry("700x800") # Ajusté un poco el tamaño para que sea más manejable
+        ventana_correo.title("GESTIÓN DE PEDIDOS A PROVEEDORES")
         ventana_correo.configure(fg_color="#E5E5E5")
 
+        # --- TABLA DE PROVEEDORES ---
         colupnas = ("NOMBRE", "CORREO")
         provedores_tabla = ttk.Treeview(ventana_correo, columns=colupnas, show="headings")
 
-        provedores_tabla.heading("NOMBRE", text="NOMBRE")
-        provedores_tabla.heading("CORREO", text="CORREO")
-        provedores_tabla.column("NOMBRE", width=100)
-        provedores_tabla.column("CORREO", width=80, anchor="center")
-        provedores_tabla.pack(pady=20, padx=20, fill="both", expand=True)
+        provedores_tabla.heading("NOMBRE", text="PROVEEDOR")
+        provedores_tabla.heading("CORREO", text="CORREO ELECTRÓNICO")
+        provedores_tabla.column("NOMBRE", width=200)
+        provedores_tabla.column("CORREO", width=300)
 
-        correo_destino = ctk.CTkEntry(ventana_correo, placeholder_text="CORREO", text_color="#FFFFFF", width=600, height=70, font=("Arial", 15))
+        # Datos de ejemplo (puedes cambiarlos por tus proveedores reales)
+        proveedores = [
+            ("Nike", "josepinedovaldes@gmail.com"),
+            ("Adiadas", "pedidos@gmail.mx")
+        ]
+
+        for p in proveedores:
+            provedores_tabla.insert("", "end", values=p)
+
+        provedores_tabla.pack(pady=20, padx=20, fill="x")
+
+        # --- CAMPOS DE TEXTO ---
+        label_correo = ctk.CTkLabel(ventana_correo, text="Destinatario:", text_color="#000000")
+        label_correo.pack(padx=10, pady=(10, 0))
+
+        correo_destino = ctk.CTkEntry(ventana_correo, placeholder_text="Seleccione un proveedor de la tabla...",
+                                      text_color="#FFFFFF", width=500, height=40, font=("Arial", 14))
         correo_destino.pack(padx=10, pady=5)
 
-        mensaje = ctk.CTkTextbox(ventana_correo, text_color="#FFFFFF", width=600, height=200, font=("Arial", 15),
-            )
+        label_msg = ctk.CTkLabel(ventana_correo, text="Mensaje del Pedido:", text_color="#000000")
+        label_msg.pack(padx=10, pady=(10, 0))
+
+        mensaje = ctk.CTkTextbox(ventana_correo, text_color="#FFFFFF", width=500, height=250, font=("Arial", 14))
         mensaje.pack(padx=10, pady=5)
+
+        # --- FUNCIONALIDAD ---
+
+        def seleccionar_proveedor(event):
+            """ Inserta el correo del proveedor seleccionado en el Entry """
+            seleccion = provedores_tabla.selection()
+            if seleccion:
+                item = provedores_tabla.item(seleccion)
+                email = item['values'][1] # El índice 1 es el CORREO
+                correo_destino.delete(0, "end")
+                correo_destino.insert(0, email)
+
+        # Vincular el evento de clic en la tabla
+        provedores_tabla.bind("<<TreeviewSelect>>", seleccionar_proveedor)
+
+        def generar_mensaje_auto():
+            """ Genera un texto predefinido """
+            # Aquí puedes usar variables globales de tu stock si quieres hacerlo más dinámico
+            texto_auto = "Estimado proveedor,\n\nPor medio de la presente solicito el reabastecimiento de insumos para el restaurante.\nFavor de enviar cotización de los productos faltantes según el inventario actual.\n\nQuedo a la espera de su confirmación.\nSaludos cordiales."
+            mensaje.delete("1.0", "end")
+            mensaje.insert("1.0", texto_auto)
 
         def enviar():
             from FuncionesEspeciales import F_embiarCorreo
-
             correo = correo_destino.get()
-            contenido = mensaje.get("0.0", "end")
-            azunto = "Reabastecimineto de algun tipo de producto: "
-            F_e.embiarCorreo(correo, contenido, azunto)
+            contenido = mensaje.get("1.0", "end")
+            azunto = "Pedido de Reabastecimiento - Zapateria 2 Hermanos"
+            F_embiarCorreo.embiarCorreo(correo, contenido, azunto)
 
-        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR", fg_color="#3E3E3E",
-                                        width=200, height=70, font=("Arial", 15),
-                                        command=lambda: enviar())
-        emviar.pack(padx=10, pady=5)
+        # --- BOTONES ---
+        btn_container = ctk.CTkFrame(ventana_correo, fg_color="transparent")
+        btn_container.pack(pady=20)
 
+        btn_auto = ctk.CTkButton(btn_container, text="MENSAJE AUTOMÁTICO", fg_color="#3E3E3E",
+                                 width=220, height=50, font=("Arial", 13, "bold"),
+                                 command=generar_mensaje_auto)
+        btn_auto.grid(row=0, column=0, padx=10)
+
+        btn_enviar = ctk.CTkButton(btn_container, text="ENVIAR CORREO", fg_color="#3E3E3E",
+                                   width=220, height=50, font=("Arial", 13, "bold"),
+                                   command=enviar)
+        btn_enviar.grid(row=0, column=1, padx=10)
 
 
 

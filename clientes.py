@@ -89,9 +89,10 @@ class cliente:
 
 
     def EnbiarCorreo(self):
+        print("se envio correo")
         ventana_correo = ctk.CTkToplevel()
         ventana_correo.geometry("1200x1000")
-        ventana_correo.title("PEDIR PRODUCTO")
+        ventana_correo.title("APARTADO DE CLIENTES")
         ventana_correo.configure(fg_color="#E5E5E5")
 
         colupnas = ("NOMBRE", "CORREO")
@@ -125,7 +126,7 @@ class cliente:
     def embiarTelegram(self):
         ventana_telegram = ctk.CTkToplevel()
         ventana_telegram.geometry("1200x1000")
-        ventana_telegram.title("PEDIR PRODUCTO")
+        ventana_telegram.title("APARTADO DEL CLIENTE")
         ventana_telegram.configure(fg_color="#E5E5E5")
 
         mensaje = ctk.CTkTextbox(ventana_telegram, text_color="#FFFFFF", width=600, height=200, font=("Arial", 15),
