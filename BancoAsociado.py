@@ -26,7 +26,7 @@ class BancoGuachinango():
         
         ctk.CTkLabel(self.header, text="BANCO GUACHINANGO", 
                       font=("Arial", 26, "bold"), text_color=self.COLOR_GUACHINANGO).place(relx=0.2, rely=0.5, anchor=ctk.CENTER)
-        ctk.CTkLabel(self.header, text="Tu dinero, siempre fresco.", 
+        ctk.CTkLabel(self.header, text="Tu cuenta del ahorro.", 
                       font=("Arial", 12, "italic"), text_color="white").place(relx=0.45, rely=0.5, anchor=ctk.CENTER)
 
         self.main_container = ctk.CTkFrame(self.Ventana, fg_color="transparent")
@@ -48,7 +48,7 @@ class BancoGuachinango():
         self.frame_lista = ctk.CTkFrame(self.main_container, fg_color="white", corner_radius=15)
         self.frame_lista.place(relx=0.7, rely=0.5, relwidth=0.58, relheight=1.0, anchor=ctk.CENTER)
 
-        ctk.CTkLabel(self.frame_lista, text="Clientes Registrados", font=("Arial", 18, "bold")).place(relx=0.5, rely=0.08, anchor=ctk.CENTER)
+        ctk.CTkLabel(self.frame_lista, text="Clientes Registrados", font=("Arial", 18, "bold"),text_color="black").place(relx=0.5, rely=0.08, anchor=ctk.CENTER)
 
         self.search_bar = ctk.CTkEntry(self.frame_lista, placeholder_text="Buscar por numero de cuenta...", width=300)
         self.search_bar.place(relx=0.5, rely=0.18, anchor=ctk.CENTER)
@@ -59,7 +59,7 @@ class BancoGuachinango():
         self.actualizar_lista()
 
     def crear_campo(self, master, label, y_pos):
-        ctk.CTkLabel(master, text=label, font=("Arial", 11)).place(relx=0.5, rely=y_pos - 0.05, anchor=ctk.CENTER)
+        ctk.CTkLabel(master, text=label, font=("Arial", 11),text_color="black").place(relx=0.5, rely=y_pos - 0.05, anchor=ctk.CENTER)
         entry = ctk.CTkEntry(master, height=35)
         entry.place(relx=0.5, rely=y_pos, relwidth=0.8, anchor=ctk.CENTER)
         return entry
@@ -102,7 +102,7 @@ class BancoGuachinango():
             card.pack(fill="x", pady=5, padx=5) # Nota: pack se mantiene solo dentro del ScrollableFrame para permitir el scroll dinamico
             
             info = f"CTA: {num} | {datos['nombre']}"
-            ctk.CTkLabel(card, text=info, font=("Arial", 12, "bold")).place(relx=0.25, rely=0.5, anchor=ctk.CENTER)
+            ctk.CTkLabel(card, text=info, font=("Arial", 12, "bold"),text_color="black").place(relx=0.25, rely=0.5, anchor=ctk.CENTER)
             
             saldo_lbl = ctk.CTkLabel(card, text=f"${datos['saldo']:,.2f}", text_color=self.COLOR_GUACHINANGO, font=("Arial", 14, "bold"))
             saldo_lbl.place(relx=0.75, rely=0.5, anchor=ctk.CENTER)
