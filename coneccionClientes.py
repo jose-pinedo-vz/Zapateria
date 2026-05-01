@@ -15,16 +15,16 @@ def obtener_conexion():
 
 def mostrar():
     try:
-        comexion = obtener_conexion()
+        conexion = obtener_conexion()
         cursor = conn.cursor()
         cursor.execute("SELECT NumeroDeCuenta, nombreDeEmpresa, ubicacioin FROM dbo.Provedor")
-        
+
         filas = cursor.fetchall()
         for fila in filas:
             print(f"ID: {fila[0].strip()} | Empresa: {fila[1].strip()} | Origen: {fila[2].strip()}")
-            
+
         cursor.close()
-        comexion.close()
+        conexion.close()
     except Exception:
         print(f"error en mostar")
 
