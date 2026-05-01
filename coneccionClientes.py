@@ -16,7 +16,7 @@ def obtener_conexion():
 def mostrar():
     try:
         comexion = obtener_conexion()
-        cursor = conn.cursor()
+        cursor = comexion.cursor()
         cursor.execute("SELECT NumeroDeCuenta, nombreDeEmpresa, ubicacioin FROM dbo.Provedor")
         
         filas = cursor.fetchall()
