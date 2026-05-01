@@ -24,13 +24,14 @@ def insert(clave, Direccion, Email, telefono, Nombre, ApellidoP) -> None:
     try:
         cursor = conn.cursor()
         query = """
-                INSERT INTO Clientes(clave, Direccion, Email, telefono, Nombre, ApellidoP)
+                INSERT INTO Clientes(clave, Direccion, Correo, telefono, Nombre, ApellidoP)
                 VALUES (?, ?, ?, ?, ?, ?)
             """
-        valores = (clave, Direccion, Email, telefono, Nombre, ApellidoP)
+        valores = (clave, Direccion, Email, int(telefono), Nombre, ApellidoP)
         cursor.execute(query, valores)
         conn.commit()
     except Exception as e:
+        print(e)
         conn.rollback()
     finally:
         conn.close()
@@ -42,7 +43,7 @@ def mostrarUser():
         return
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT clave, Nombre, ApellidoP, Direccion, Email, telefono FROM Clientes")
+        cursor.execute("SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono FROM Clientes")
         usuarios = cursor.fetchall()
         if not usuarios:
             print("sin usars")
@@ -62,10 +63,18 @@ def update(clave, Direccion, Email, telefono, Nombre, ApellidoP) -> None:
         cursor = conn.cursor()
         query = """
             UPDATE Clientes
-            SET Direccion = ?, Email = ?, telefono = ?, Nombre = ?, ApellidoP = ?
+            SET Direccion = ?, Correo = ?, telefono = ?, Nombre = ?, ApellidoP = ?
             WHERE clave = ?
         """
-        valores = (Direccion, Email, telefono, Nombre, ApellidoP, clave)
+
+        valores = (
+                str(Direccion).strip(),
+                str(Email).strip(),
+                telefono,
+                str(Nombre).strip(),
+                str(ApellidoP).strip(),
+                str(clave).strip()
+        )
         cursor.execute(query, valores)
         conn.commit()
         if cursor.rowcount > 0:
@@ -86,10 +95,12 @@ def delate(clave) -> None:
         return
     try:
         cursor = conn.cursor()
+        clave_formateada = str(clave).strip()
         query = """
             DELeTE FROM Clientes WHERE clave = ?
         """
-        cursor.execute(query, (clave,))
+
+        cursor.execute(query, (clave_formateada,))
         conn.commit()
         filas = cursor.rowcount
         if filas > 0:
@@ -108,7 +119,7 @@ def mostrarTablaEditar():
         return
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT clave, Nombre, ApellidoP, telefono, Email, Direccion FROM Clientes")
+        cursor.execute("SELECT clave, Nombre, ApellidoP, telefono, Correo, Direccion FROM Clientes")
         usuarios = cursor.fetchall()
         if not usuarios:
             print("sin usars")
@@ -118,6 +129,68 @@ def mostrarTablaEditar():
         print("error al mostrar user ", e)
     finally:
         conn.close()
+
+def mostrarTablaCorreo():
+    conn = coneccion()
+    if conn == None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT Nombre, Correo, telefono FROM Clientes")
+        usuarios = cursor.fetchall()
+        if not usuarios:
+            print("sin usars")
+        else:
+            return usuarios
+    except Exception as e:
+        print("error al mostrar user ", e)
+    finally:
+        conn.close()
+
+
+def buscar_clave(clave) -> tuple:
+    conn = coneccion()
+    if conn == None:
+        return None
+    try:
+        cursor = conn.cursor()
+        query = """SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono FROM Clientes
+            WHERE clave = ?
+        """
+        cursor.execute(query, clave)
+        usuarios = cursor.fetchall()
+        return usuarios
+    except Exception as e:
+        print("Ubo un error ", e)
+    finally:
+        conn.close()
+
+def buscar_por_nombre(nombre_busqueda) -> list:
+    conn = coneccion()
+    if conn is None:
+        return []
+
+    try:
+        cursor = conn.cursor()
+
+        filtro = f"{nombre_busqueda}%"
+
+        query = """SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono
+                   FROM Clientes
+                   WHERE Nombre LIKE ?"""
+
+        cursor.execute(query, (filtro,))
+
+        coincidencias = cursor.fetchall()
+
+        return coincidencias
+
+    except Exception as e:
+        print(f"Hubo un error en la búsqueda: {e}")
+        return []
+    finally:
+        conn.close()
+
 
 # insert("z-242", 7, "jose190", 123456789, "Jose", "Pinedo")
 # mostrarUser()

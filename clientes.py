@@ -1,8 +1,11 @@
 import customtkinter as ctk
 from tkinter import ttk
+from tkinter import messagebox
+
 # from Controlador.clientes import mostrarUser
 from Controlador import clientes
 from FuncionesEspeciales import F_claves
+from FuncionesEspeciales import F_whatsapp
 
 class cliente:
     def __init__(self):
@@ -31,14 +34,35 @@ class cliente:
         self.frame_busqueda = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.frame_busqueda.pack(pady=20, fill="x", padx=20)
 
-        self.lb_busqueda = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
-        self.lb_busqueda.grid(row=0, column=0, padx=10, pady=10)
+        lb_busqueda1 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
+        lb_busqueda1.grid(row=0, column=0, padx=10, pady=10)
 
-        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
-        self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
+        self.ent_buscar_calve = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=250)
+        self.ent_buscar_calve.grid(row=0, column=1, padx=5, pady=5)
 
-        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E")
-        self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)
+        # def buscar_clave():
+        #     calve = self.ent_buscar_calve.get().strip()
+        #     clientes.buscar_clave()
+
+
+
+        self.btn_buscar_clave = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E",
+                                             command=lambda: self.buscar_clave())
+        self.btn_buscar_clave.grid(row=0, column=2, padx=5, pady=5)
+
+        lb_busqueda2 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR NOMBRE", text_color="#1A1A1A")
+        lb_busqueda2.grid(row=0, column=3, padx=10, pady=10)
+
+        self.ent_buscar_nombre = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: Juan", width=250)
+        self.ent_buscar_nombre.grid(row=0, column=4, padx=5, pady=5)
+
+        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E",
+                                              command=lambda: self.BuscarPorNombre())
+        self.btn_buscar_nombre.grid(row=0, column=5, padx=5, pady=5)
+
+        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Todos", width=100, fg_color="#3E3E3E",
+                                              command=lambda: self.mostrarTalbe())
+        self.btn_buscar_nombre.grid(row=0, column=6, padx=5, pady=5)
 
         colupnas = ("CLAVE", "NOMBRE", "APELLIDO", "DIRECCION", "GMAIL", "TELEFONO")
 
@@ -57,8 +81,6 @@ class cliente:
         self.clientes.column("DIRECCION", width=120, stretch=True)
         self.clientes.column("GMAIL", width=120, stretch=True)
         self.clientes.column("TELEFONO", width=120, stretch=True)
-
-
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",
@@ -71,6 +93,8 @@ class cliente:
         self.clientes.configure(height=15)
         self.clientes.pack(fill="x", padx=20, pady=20)
 
+        self.clientes.bind("<<TreeviewSelect>>", self.eliminar)
+
         self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.frame_acciones.pack(pady=20, fill="x", padx=20)
 
@@ -78,7 +102,8 @@ class cliente:
             command=lambda: self.edita())
         self.btnEditar.grid(row=0, column=0, padx=10, pady=10)
 
-        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150)
+        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150,
+            command=lambda: self.eliminar_UI())
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
         self.btn_Agregar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="INSERTAR", width=150,
@@ -97,9 +122,39 @@ class cliente:
         self.ventana.mainloop()
 
 
+    def BuscarPorNombre(self):
+        nombre = self.ent_buscar_nombre.get().strip()
+        for item in self.clientes.get_children():
+            self.clientes.delete(item)
+
+        clientes.buscar_por_nombre(nombre)
+        for item in self.clientes.get_children():
+                self.clientes.delete(item)
+        datos = clientes.buscar_por_nombre(nombre)
+        if datos:
+            for fila in datos:
+                self.clientes.insert("", "end", values=tuple(str(item).strip() for item in fila))
+        else:
+            print("No hay datos para mostrar en la interfaz.")
+
+    def buscar_clave(self):
+        clave = self.ent_buscar_calve.get().strip()
+        for item in self.clientes.get_children():
+            self.clientes.delete(item)
+
+        clientes.buscar_clave(clave)
+        for item in self.clientes.get_children():
+                self.clientes.delete(item)
+        datos = clientes.buscar_clave(clave)
+        if datos:
+            for fila in datos:
+                self.clientes.insert("", "end", values=tuple(str(item).strip() for item in fila))
+        else:
+            print("No hay datos para mostrar en la interfaz.")
+
+
 
     def mostrarTalbe(self):
-        # print("el error no esta aqui ya que si llega ")
         for item in self.clientes.get_children():
             self.clientes.delete(item)
 
@@ -120,17 +175,28 @@ class cliente:
         ventana_correo.title("APARTADO DE CLIENTES")
         ventana_correo.configure(fg_color="#E5E5E5")
 
-        colupnas = ("NOMBRE", "CORREO")
-        user_tabla = ttk.Treeview(ventana_correo, columns=colupnas, show="headings")
+        colupnas = ("NOMBRE", "CORREO", "NUMERO")
+        self.user_tabla = ttk.Treeview(ventana_correo, columns=colupnas, show="headings")
 
-        user_tabla.heading("NOMBRE", text="NOMBRE")
-        user_tabla.heading("CORREO", text="CORREO")
-        user_tabla.column("NOMBRE", width=100)
-        user_tabla.column("CORREO", width=80, anchor="center")
-        user_tabla.pack(pady=20, padx=20, fill="both", expand=True)
+        self.user_tabla.heading("NOMBRE", text="NOMBRE")
+        self.user_tabla.heading("CORREO", text="CORREO")
+        self.user_tabla.heading("NUMERO", text="NUMERO")
 
-        correo_destino = ctk.CTkEntry(ventana_correo, placeholder_text="CORREO", text_color="#FFFFFF", width=600, height=70, font=("Arial", 15))
-        correo_destino.pack(padx=10, pady=5)
+        self.user_tabla.column("NOMBRE", width=100)
+        self.user_tabla.column("CORREO", width=80, anchor="center")
+        self.user_tabla.column("NUMERO",  width=80, anchor="center")
+
+        self.user_tabla.pack(pady=20, padx=20, fill="both", expand=True)
+
+        self.user_tabla.bind("<<TreeviewSelect>>", self.Mostrar_correos)
+
+        self.mostrarTablaCorreos()
+
+        self.correo_destino = ctk.CTkEntry(ventana_correo, placeholder_text="CORREO", text_color="#FFFFFF", width=600, height=70, font=("Arial", 15))
+        self.correo_destino.pack(padx=10, pady=5)
+
+        self.telefono_destino = ctk.CTkEntry(ventana_correo, placeholder_text="TELEFONO", text_color="#FFFFFF", width=600, height=70, font=("Arial", 15))
+        self.telefono_destino.pack(padx=10, pady=5)
 
         mensaje = ctk.CTkTextbox(ventana_correo, text_color="#FFFFFF", width=600, height=200, font=("Arial", 15),
             )
@@ -138,14 +204,55 @@ class cliente:
 
         def enviar():
             from FuncionesEspeciales import F_embiarCorreo
-            correo = correo_destino.get()
+            correo = self.correo_destino.get()
             contenido = mensaje.get("0.0", "end")
             azunto = "Trata de algun tema"
             F_embiarCorreo.embiarCorreo(correo, contenido, azunto)
+            messagebox.showinfo("Envio", "se embio el correo")
 
-        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR", fg_color="#3E3E3E",
+        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR CORREO", fg_color="#3E3E3E",
                 width=200, height=70, font=("Arial", 15), command=lambda: enviar())
         emviar.pack(padx=10, pady=5)
+
+        def enviar_texto():
+            telefono = self.telefono_destino.get()
+            contenido = mensaje.get("0.0", "end")
+
+            quey = F_whatsapp.enviar_whatsapp(telefono, contenido)
+            if quey:
+                messagebox.showinfo("Envio", "se embio el correro")
+            else:
+                messagebox.showinfo("Envio", "Ubo un error")
+
+
+
+        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR MENSAJE", fg_color="#3E3E3E",
+                width=200, height=70, font=("Arial", 15), command=lambda: enviar_texto())
+        emviar.pack(padx=10, pady=5)
+
+    def Mostrar_correos(self, event):
+        seleccion = self.user_tabla.selection()
+        if seleccion:
+            item = self.user_tabla.item(seleccion)
+            valores = item['values']
+
+            self.correlo_electronico = valores[1]
+            self.whatsap = valores[2]
+
+            self.correo_destino.delete(0, "end")
+            self.telefono_destino.delete(0, "end")
+
+            self.correo_destino.insert(0, str(valores[1]).strip())
+            self.telefono_destino.insert(0, str(valores[2]).strip())
+
+
+    def mostrarTablaCorreos(self):
+        for item in self.user_tabla.get_children():
+            self.user_tabla.delete(item)
+        datos = clientes.mostrarTablaCorreo()
+        if datos:
+            for fila in datos:
+                 self.user_tabla.insert("", "end", values=tuple(str(item).strip() for item in fila))
 
     def embiarTelegram(self):
         ventana_telegram = ctk.CTkToplevel()
@@ -299,7 +406,6 @@ class cliente:
             for fila in datos:
                 self.editar_talbla.insert("", "end", values=tuple(str(item).strip() for item in fila))
 
-
     def insertar(self):
         COLOR_PRIMARIO = "#F8C8DC"
         COLOR_SECUNDARIO = "#1A1A1A"
@@ -340,7 +446,6 @@ class cliente:
 
         def agregar_valores_a_insertar():
             try:
-                import random
                 nombre = nombre_entry.get()
                 apellido = apellido_entry.get()
                 telefono = int(ent_telefono.get())
@@ -364,6 +469,70 @@ class cliente:
         self.btn_accion = ctk.CTkButton(frame_izquierdo, text="INSERTAR", fg_color=COLOR_SECUNDARIO, hover_color=COLOR_TERCIARIO,
             command=lambda: agregar_valores_a_insertar())
         self.btn_accion.pack(pady=30)
+
+    def eliminar_UI(self):
+        COLOR_ROSA = "#F8C8DC"
+        COLOR_NEGRO = "#1A1A1A"
+        COLOR_FONDO = "#F2F2F2"
+        COLOR_BLANCO = "#FFFFFF"
+
+        try:
+            calve_a_eliminar = self.clave_cliente_a_eliminar
+            nombre_eliminar = self.nombre_a_eliminar
+
+            ventana_mini = ctk.CTkToplevel()
+            ventana_mini.title("Confirmar Eliminación")
+
+            ventana_mini.geometry("600x400")
+            ventana_mini.resizable(False, False)
+            ventana_mini.configure(fg_color=COLOR_FONDO)
+        except:
+            from tkinter import messagebox
+            messagebox.showinfo("ERORR", "SELECCIONE UN CLIENTE")
+            return
+
+        # ventana_mini.grab_set()
+
+        frame = ctk.CTkFrame(ventana_mini, fg_color=COLOR_ROSA, corner_radius=15)
+        frame.pack(padx=20, pady=20, fill="both", expand=True)
+
+        texto = f"¿Quieres eliminar al usuario:\n{nombre_eliminar}?"
+        label = ctk.CTkLabel(frame, text=texto, text_color=COLOR_NEGRO,
+                                 font=("Arial", 14, "bold"), wraplength=300)
+        label.pack(pady=(30, 20))
+
+        def eliminar_cliente():
+            print(f"se eliminara: {calve_a_eliminar}")
+            clientes.delate(calve_a_eliminar)
+            self.mostrarTalbe()
+
+        btn_aceptar = ctk.CTkButton(frame, text="ACEPTAR",
+                                        fg_color=COLOR_NEGRO,
+                                        text_color=COLOR_BLANCO,
+                                        hover_color="#333333",
+                                        command=lambda: [eliminar_cliente(), ventana_mini.destroy()])
+        btn_aceptar.pack(pady=10)
+
+        btn_aceptar = ctk.CTkButton(frame, text="CANSELAR",
+                                        fg_color=COLOR_NEGRO,
+                                        text_color=COLOR_BLANCO,
+                                        hover_color="#333333",
+                                        command=lambda: [ventana_mini.destroy()])
+        btn_aceptar.pack(pady=10)
+
+
+
+    def eliminar(self, event):
+        seleccion = self.clientes.selection()
+        if seleccion:
+            item = self.clientes.item(seleccion)
+            valores = item['values']
+            self.clave_cliente_a_eliminar = valores[0]
+            self.nombre_a_eliminar = valores[1]
+            print(self.clave_cliente_a_eliminar)
+
+
+
 
 
 
