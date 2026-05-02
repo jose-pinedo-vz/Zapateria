@@ -1,6 +1,11 @@
 import customtkinter as ctk
 from tkinter import ttk
 
+
+from FuncionesEspeciales import F_claves
+from Controlador import productos
+from tkinter import messagebox
+
 class inventario:
     def __init__(self):
         self.ventana = ctk.CTkToplevel()
@@ -10,11 +15,10 @@ class inventario:
         try: self.ventana.state('zoomed')
         except: self.ventana.attributes('-zoomed', True)
 
-        self.ventana.grid_columnconfigure(0, weight=0) # Menú (no se estira)
-        self.ventana.grid_columnconfigure(1, weight=1) # Contenido (sí se estira)
-        self.ventana.grid_rowconfigure(0, weight=1)    # Que ocupe todo el alto
+        self.ventana.grid_columnconfigure(0, weight=0)
+        self.ventana.grid_columnconfigure(1, weight=1)
+        self.ventana.grid_rowconfigure(0, weight=1)
 
-        # FRAME del menu o la izquierda
         self.frame_menu = ctk.CTkFrame(self.ventana, fg_color="#2B2B2B", corner_radius=0)
         self.frame_menu.grid(row=0, column=0, sticky="ns", padx=0, pady=0)
 
@@ -132,7 +136,7 @@ class inventario:
         apartado_producto = ctk.CTkLabel(self.fm_mostrar, text="REGISTRO DE PRODUCTOS", text_color="#1A1A1A", font=("ARIAL", 40))
         apartado_producto.grid(row=0, column=0, padx=10, pady=10)
 
-        self.frame_busqueda = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
+        self.frame_busqueda = ctk.CTkFrame(self.frame_contenido, fg_color="#FFFFFF", corner_radius=15)
         self.frame_busqueda.pack(pady=20, fill="x", padx=20)
 
         self.lb_busqueda = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
@@ -163,41 +167,61 @@ class inventario:
         style.configure("Treeview",
                         background="#F2F2F2",
                         foreground="black",
-                        rowheight=25,
+                        rowheight=35,
                         fieldbackground="#F2F2F2")
         style.map("Treeview", background=[('selected', '#3E3E3E')])
 
         self.tablaProductos.configure(height=15)
         self.tablaProductos.pack(fill="x", padx=20, pady=20)
 
-        self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
+        self.tablaProductos.bind("<<TreeviewSelect>>", self.eliminar)
+
+        self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#FFFFFF", corner_radius=15)
         self.frame_acciones.pack(pady=20, fill="x", padx=20)
 
-        self.btnEditar = ctk.CTkButton(self.frame_acciones, fg_color="#3E3E3E", text="EDITAR", width=150)
+        self.btnEditar = ctk.CTkButton(self.frame_acciones, fg_color="#FF5733", text="EDITAR", width=150,
+            command=lambda: self.edita())
         self.btnEditar.grid(row=0, column=0, padx=10, pady=10)
 
-        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150)
+        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="ELIMINAR", width=150,
+                                        command=lambda: self.eliminar_UI())
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="AGREGAR",
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="AGREGAR",
                                         width=150,
                                         command=lambda: self.AgregarProducto()
                                         )
         self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
 
+        self.llenarTablaProductos()
+
+    def llenarTablaProductos(self):
+        for item in self.tablaProductos.get_children():
+            self.tablaProductos.delete(item)
+
+        productos.mostrar()
+        for item in self.tablaProductos.get_children():
+                self.tablaProductos.delete(item)
+        datos = productos.mostrar()
+        if datos:
+            for fila in datos:
+                self.tablaProductos.insert("", "end", values=tuple(str(item).strip() for item in fila))
+        else:
+            print("No hay datos para mostrar en la interfaz.")
+
     def AgregarProducto(self):
         self.create_producto = ctk.CTkToplevel()
-        self.create_producto.geometry("300x500")
+        self.create_producto.geometry("500x800")
         self.create_producto.title("DAR DE ALTA UN NUEVO PRODICTO")
         self.create_producto.configure(fg_color="#E5E5E5")
 
-        self.en_modelo = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
+        self.en_modelo = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
         self.en_modelo.pack(padx=10, pady=5)
 
-        self.en_marca = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
+        self.en_marca = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
         self.en_marca.pack(padx=10, pady=5)
 
-        opciones_seccion = ["Caballeros", "Damas", "Niños"]
+        opciones_seccion = ["Caballeros", "Damas", "Niños", "Niña", "Bebé", "Unisex"]
 
         self.lbl_seccion = ctk.CTkLabel(self.create_producto, text="Sección:", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
         self.lbl_seccion.pack(padx=10, pady=5)
@@ -213,6 +237,24 @@ class inventario:
         )
         self.combo_seccion.pack(padx=10, pady=5)
 
+        categorias = ["Escolar", "Casual", "Vestir", "Bota", "Deportivo", "Urbano", "Fútbol",
+            "Sandalia", "Pantufla", "Huarache", "Bota de Lluvia"]
+
+        self.lbl_categoria = ctk.CTkLabel(self.create_producto, text="Sección:", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
+        self.lbl_categoria.pack(padx=10, pady=5)
+
+        self.combo_categoria = ctk.CTkComboBox(
+            self.create_producto,
+            values=categorias,
+            corner_radius=0,
+            fg_color="#F2F2F2",
+            text_color="#1A1A1A",
+            width=200, height=70,
+            font=("Arial", 15)
+        )
+        self.combo_categoria.pack(padx=10, pady=5)
+
+
         self.btn_registrar = ctk.CTkButton(self.create_producto, text="REGISTRAR", fg_color="#3E3E3E",
                                         width=200, height=70, font=("Arial", 15),
                                         command=lambda: self.insertarDatosProducto())
@@ -221,9 +263,171 @@ class inventario:
     def insertarDatosProducto(self):
         modelo = self.en_modelo.get()
         marca = self.en_marca.get()
-        combo_box = self.combo_seccion.get()
+        seccion = self.combo_seccion.get()
+        categoria = self.combo_categoria.get()
 
-        print(f"modelo {modelo}, marca {marca}, seccion {combo_box}")
+        clave = F_claves.Generar_clave_producto()
+        try:
+            productos.insert(clave, modelo, marca, seccion, categoria)
+            # messagebox.showinfo("Todo correcto", "todo salio correcto")
+            self.llenarTablaProductos()
+        except:
+            messagebox.showinfo("Error", "Ubo un error en la insercion de datos")
+
+
+    def edita(self):
+            COLOR_PRIMARIO = "#FFFFFF"
+            COLOR_SECUNDARIO = "#FF5733"
+            COLOR_TERCIARIO = "#FFB0CC"
+            COLOR_COMPLEMENTARIO = "#8DCCE3"
+            COLOR_FONDO_BLANCO = "#1A1A1A"
+            COLOR_TEXTO_NEGRO = "#1A1A1A"
+
+            ventana_correo = ctk.CTkToplevel()
+            ventana_correo.geometry("1800x1200")
+            ventana_correo.title("APARTADO DE PRODUCTOS")
+            ventana_correo.configure(fg_color=COLOR_FONDO_BLANCO)
+
+            ventana_correo.grid_columnconfigure(0, weight=1)
+            ventana_correo.grid_columnconfigure(1, weight=2)
+            ventana_correo.grid_rowconfigure(0, weight=1)
+
+
+            frame_izquierdo = ctk.CTkFrame(ventana_correo, fg_color=COLOR_PRIMARIO, corner_radius=15)
+            frame_izquierdo.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+            ctk.CTkLabel(frame_izquierdo, text="DATOS DEL PRODUCTO", text_color=COLOR_TEXTO_NEGRO, font=("Arial", 16, "bold")).pack(pady=20)
+
+            self.en_modelo = ctk.CTkEntry(frame_izquierdo, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+            self.en_modelo.pack(padx=10, pady=5)
+
+            self.en_marca = ctk.CTkEntry(frame_izquierdo, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+            self.en_marca.pack(padx=10, pady=5)
+
+            opciones_seccion = ["Caballeros", "Damas", "Niños", "Niña", "Bebé", "Unisex"]
+
+            self.lbl_seccion = ctk.CTkLabel(frame_izquierdo, text="Sección:", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
+            self.lbl_seccion.pack(padx=10, pady=5)
+
+            self.combo_seccion = ctk.CTkComboBox(
+                frame_izquierdo,
+                values=opciones_seccion,
+                corner_radius=0,
+                fg_color="#F2F2F2",
+                text_color="#1A1A1A",
+                width=200, height=70,
+                font=("Arial", 15)
+            )
+            self.combo_seccion.pack(padx=10, pady=5)
+
+            categorias = ["Escolar", "Casual", "Vestir", "Bota", "Deportivo", "Urbano", "Fútbol",
+                "Sandalia", "Pantufla", "Huarache", "Bota de Lluvia"]
+
+            self.lbl_categoria = ctk.CTkLabel(frame_izquierdo, text="Sección:", text_color="#1A1A1A", width=200, height=70, font=("Arial", 15))
+            self.lbl_categoria.pack(padx=10, pady=5)
+
+            self.combo_categoria = ctk.CTkComboBox(
+                frame_izquierdo,
+                values=categorias,
+                corner_radius=0,
+                fg_color="#F2F2F2",
+                text_color="#1A1A1A",
+                width=200, height=70,
+                font=("Arial", 15)
+            )
+            self.combo_categoria.pack(padx=10, pady=5)
+
+
+            def editar():
+                try:
+                    modelo = self.en_modelo.get()
+                    marca = self.en_marca.get()
+                    seccion = self.combo_seccion.get()
+                    categoria = self.combo_categoria.get()
+                    print("Se va")
+                    productos.update(self.clave_productos, modelo, marca, seccion, categoria)
+                    self.llenarTablaProductos()
+                    ventana_correo.destroy()
+                except Exception as e:
+                    print(f"El erro es {e}")
+                    from tkinter import messagebox
+                    messagebox.showinfo("Fallo", "No se puede actualizar")
+
+            self.btn_accion = ctk.CTkButton(frame_izquierdo, text="ACTUALIZAR", fg_color=COLOR_SECUNDARIO, hover_color=COLOR_TERCIARIO,
+                command=lambda: editar())
+            self.btn_accion.pack(pady=30)
+
+            frame_derecho = ctk.CTkFrame(ventana_correo, fg_color=COLOR_FONDO_BLANCO)
+            frame_derecho.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
+
+            COLOR_FONDO_TABLA = "#FFFFFF"  # Blanco puro
+            COLOR_TEXTO_TABLA = "#000000"  # Negro puro
+            COLOR_CABECERA = "#1A1A1A"     # Gris muy oscuro (Negro)
+            COLOR_SELECCION = "#D3D3D3"    # Gris claro para cuando seleccionas una fila
+
+            style = ttk.Style()
+            style.theme_use("clam")
+
+            style.configure("Treeview",
+                            background=COLOR_FONDO_TABLA,
+                            foreground=COLOR_TEXTO_TABLA,
+                            rowheight=35,
+                            fieldbackground=COLOR_FONDO_TABLA,
+                            borderwidth=0,
+                            font=("Arial", 11))
+
+            style.map("Treeview",
+                      background=[('selected', COLOR_SELECCION)],
+                      foreground=[('selected', COLOR_TEXTO_TABLA)])
+
+            style.configure("Treeview.Heading",
+                            background=COLOR_CABECERA,
+                            foreground="#FFFFFF",
+                            relief="flat",
+                            font=("Arial", 10, "bold"))
+
+
+            style.map("Treeview.Heading",
+                      background=[('active', COLOR_CABECERA)])
+
+            colupnas = ("Clave", "Modelo", "Marca", "Seccion", "categoria")
+            self.editar_talbla = ttk.Treeview(frame_derecho, columns=colupnas, show="headings", style="Treeview")
+
+
+            self.editar_talbla.heading("Clave", text="Clave")
+            self.editar_talbla.heading("Modelo", text="Modelo")
+            self.editar_talbla.heading("Marca", text="Marca")
+            self.editar_talbla.heading("Seccion", text="Seccion")
+            self.editar_talbla.heading("categoria", text="categoria")
+
+            self.editar_talbla.pack(fill="both", expand=True)
+
+            self.mostrarTablaEditar()
+
+            self.editar_talbla.bind("<<TreeviewSelect>>", self.obtener_datos_seleccionados_de_editar)
+
+    def obtener_datos_seleccionados_de_editar(self, event):
+            seleccion = self.editar_talbla.selection()
+            if seleccion:
+                item = self.editar_talbla.item(seleccion)
+                valores = item['values']
+                self.clave_productos = valores[0]
+                Modelo = valores[1]
+                marca = valores[2]
+
+                self.en_modelo.delete(0, "end")
+                self.en_modelo.insert(0, Modelo)
+                self.en_marca.delete(0, "end")
+                self.en_marca.insert(0, marca)
+
+
+    def mostrarTablaEditar(self):
+        for item in self.editar_talbla.get_children():
+                self.editar_talbla.delete(item)
+        datos = productos.mostrar()
+        if datos:
+            for fila in datos:
+                self.editar_talbla.insert("", "end", values=tuple(str(item).strip() for item in fila))
 
     def EnbiarCorreo(self):
         ventana_correo = ctk.CTkToplevel()
@@ -306,6 +510,68 @@ class inventario:
                                    width=220, height=50, font=("Arial", 13, "bold"),
                                    command=enviar)
         btn_enviar.grid(row=0, column=1, padx=10)
+
+
+    def eliminar_UI(self):
+        COLOR_ROSA = "#F8C8DC"
+        COLOR_NEGRO = "#1A1A1A"
+        COLOR_FONDO = "#F2F2F2"
+        COLOR_BLANCO = "#FFFFFF"
+
+        try:
+            calve_a_eliminar = self.clave_cliente_a_eliminar
+            nombre_eliminar = self.nombre_a_eliminar
+
+            ventana_mini = ctk.CTkToplevel()
+            ventana_mini.title("Confirmar Eliminación")
+
+            ventana_mini.geometry("600x400")
+            ventana_mini.resizable(False, False)
+            ventana_mini.configure(fg_color=COLOR_FONDO)
+        except:
+            from tkinter import messagebox
+            messagebox.showinfo("ERORR", "SELECCIONE UN CLIENTE")
+            return
+
+        # ventana_mini.grab_set()
+
+        frame = ctk.CTkFrame(ventana_mini, fg_color=COLOR_BLANCO, corner_radius=15)
+        frame.pack(padx=20, pady=20, fill="both", expand=True)
+
+        texto = f"¿Quieres eliminar al usuario:\n{nombre_eliminar}?"
+        label = ctk.CTkLabel(frame, text=texto, text_color=COLOR_NEGRO,
+                                font=("Arial", 14, "bold"), wraplength=300)
+        label.pack(pady=(30, 20))
+
+        def eliminar_cliente():
+            print(f"se eliminara: {calve_a_eliminar}")
+            productos.delate(calve_a_eliminar)
+            self.llenarTablaProductos()
+
+        btn_aceptar = ctk.CTkButton(frame, text="ACEPTAR",
+                                        fg_color=COLOR_NEGRO,
+                                        text_color=COLOR_BLANCO,
+                                        hover_color="#FF5733",
+                                        command=lambda: [eliminar_cliente(), ventana_mini.destroy()])
+        btn_aceptar.pack(pady=10)
+
+        btn_aceptar = ctk.CTkButton(frame, text="CANSELAR",
+                                        fg_color=COLOR_NEGRO,
+                                        text_color=COLOR_BLANCO,
+                                        hover_color="#FF5733",
+                                        command=lambda: [ventana_mini.destroy()])
+        btn_aceptar.pack(pady=10)
+
+
+
+    def eliminar(self, event):
+        seleccion = self.tablaProductos.selection()
+        if seleccion:
+            item = self.tablaProductos.item(seleccion)
+            valores = item['values']
+            self.clave_cliente_a_eliminar = valores[0]
+            self.nombre_a_eliminar = valores[1]
+            print(self.clave_cliente_a_eliminar)
 
 
 

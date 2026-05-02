@@ -7,6 +7,9 @@ from Controlador import clientes
 from FuncionesEspeciales import F_claves
 from FuncionesEspeciales import F_whatsapp
 
+
+# xhost +local:
+
 class cliente:
     def __init__(self):
         self.ventana = ctk.CTkToplevel()
