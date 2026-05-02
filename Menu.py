@@ -2,7 +2,8 @@ import customtkinter as ctk
 from Ventas import ModuloVentas
 from Corte_caja import ModuloFinanzas
 import os
-
+#pip install pyodbc
+#pip install fpdf2 Pillow
 class Ventana_GUI():
     def Iniciar(self):
         self.COLOR_PRIMARIO = "#F8C8DC"

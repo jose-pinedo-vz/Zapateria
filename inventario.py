@@ -56,7 +56,7 @@ class inventario:
     def frameCentral(self):
         self.limpiar_frame_central()
         # frame del centro
-        self.fm_mostrar = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
+        self.fm_mostrar = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5",corner_radius=15)
         self.fm_mostrar.pack(pady=20, fill="x", padx=20)
 
         apartado_inventario = ctk.CTkLabel(self.fm_mostrar, text="INVENTARIO", text_color="#1A1A1A", font=("ARIAL", 40))
