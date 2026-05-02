@@ -536,14 +536,5 @@ class cliente:
 
 
 
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     obj = cliente()

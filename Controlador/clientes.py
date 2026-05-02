@@ -4,16 +4,11 @@ def coneccion():
     try:
         DB_CONFIG = (
             "DRIVER={ODBC Driver 18 for SQL Server};"
-<<<<<<< HEAD
             "SERVER=localhost;"
             "DATABASE=Zapateria2;"
             "UID=sa;"
             "PWD=JitlerSQL2026!;"
             "Encrypt=yes;"
-=======
-            "SERVER=.;"
-            "DATABASE=zapateria;"
->>>>>>> 6b118caf00f0de625fb1f4e6de3f24c7af774e6b
             "TrustServerCertificate=yes;"
         )
         conn = pyodbc.connect(DB_CONFIG)

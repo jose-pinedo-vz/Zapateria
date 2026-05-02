@@ -8,7 +8,6 @@ from PIL import Image, ImageTk
 
 
 
-
 class RegistroProductos():
     def __init__(self, root):
         self.root = root
@@ -23,7 +22,7 @@ class RegistroProductos():
                                )
         self.boton.pack(pady=10)
 
-        self.boton2 = tk.Button(self.root, text="ir a ver imagenes", 
+        self.boton2 = tk.Button(self.root, text="ir a ver imagenes",
                                 command=lambda: self.mostrarImagen())
         self.boton2.pack(pady=20)
 
@@ -32,8 +31,8 @@ class RegistroProductos():
         Funcion con la capasidad de habir una ventana usando tkinter.
         de esta forma se seleccionara una imagen con las nominaciones correspondieste
         y hacer si despeus ago que las pueda meter en una carpeta adicional
-        
-        :param self: solo resive la ventana 
+
+        :param self: solo resive la ventana
         no retorna nada
         """
 
@@ -60,8 +59,8 @@ class RegistroProductos():
     def insertarImagen(self, ruta_imagen):
         """
         insercion de la imagen dentro de la carpeta seleccionada
-        
-        :param ruta_imagen: se recibe como parametro la ruta de la imagen en el formato 
+
+        :param ruta_imagen: se recibe como parametro la ruta de la imagen en el formato
             correcto
         """
 
@@ -90,7 +89,7 @@ class RegistroProductos():
     def crearCarpetas(self):
         """
         creacion y confirmacion de una carpeta
-        
+
         :param self: sin parametros ni return
         """
         ruta = Path("imagenes_productos")
@@ -99,7 +98,7 @@ class RegistroProductos():
     def mostrarImagen(self):
         """
         Mostrar la imagen del arhivo
-        
+
         :param self: Description
         """
         mostrar = tk.Toplevel()
@@ -116,19 +115,19 @@ class RegistroProductos():
             for i in imagenes:
                 ruta_limpia = i.strip()
                 print(f"Intentando abrir: '{ruta_limpia}'") # Para verificar en terminal
-                
+
                 try:
                     imagen_original = Image.open(ruta_limpia)
-                    
+
                     imagen_res = imagen_original.resize((200, 200))
-                    
+
                     foto = ImageTk.PhotoImage(imagen_res)
 
                     etiqueta_imagen = tk.Label(mostrar, image=foto)
                     etiqueta_imagen.pack(pady=20)
-                    
-                    etiqueta_imagen.image = foto 
-                    
+
+                    etiqueta_imagen.image = foto
+
                 except Exception as e:
                     print(f"Error al cargar {ruta_limpia}: {e}")
 
