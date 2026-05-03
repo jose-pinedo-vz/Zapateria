@@ -3,9 +3,18 @@ import pyodbc
 def coneccion():
     try:
         DB_CONFIG = (
+<<<<<<< HEAD
             "DRIVER={SQL Server};"
             "SERVER=.;"
             "DATABASE=Zapateria;"
+=======
+            "DRIVER={ODBC Driver 18 for SQL Server};"
+            "SERVER=localhost;"
+            "DATABASE=Zapateria2;"
+            "UID=sa;"
+            "PWD=JitlerSQL2026!;"
+            "Encrypt=yes;"
+>>>>>>> 552c7d0d24d02aef6712721f42b7fd44c448e33c
             "TrustServerCertificate=yes;"
         )
         conn = pyodbc.connect(DB_CONFIG)
@@ -22,7 +31,7 @@ def insert(clave, Direccion, Email, telefono, Nombre, ApellidoP) -> None:
     try:
         cursor = conn.cursor()
         query = """
-                INSERT INTO Clientes(clave, Direccion, Correo, telefono, Nombre, ApellidoP)
+                INSERT INTO Clientes(clave, Direccion, Email, telefono, Nombre, ApellidoP)
                 VALUES (?, ?, ?, ?, ?, ?)
             """
         valores = (clave, Direccion, Email, int(telefono), Nombre, ApellidoP)
@@ -41,7 +50,7 @@ def mostrarUser():
         return
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono FROM Clientes")
+        cursor.execute("SELECT clave, Nombre, ApellidoP, Direccion, Email, telefono FROM Clientes")
         usuarios = cursor.fetchall()
         if not usuarios:
             print("sin usars")
@@ -61,7 +70,7 @@ def update(clave, Direccion, Email, telefono, Nombre, ApellidoP) -> None:
         cursor = conn.cursor()
         query = """
             UPDATE Clientes
-            SET Direccion = ?, Correo = ?, telefono = ?, Nombre = ?, ApellidoP = ?
+            SET Direccion = ?, Email = ?, telefono = ?, Nombre = ?, ApellidoP = ?
             WHERE clave = ?
         """
 
@@ -117,7 +126,7 @@ def mostrarTablaEditar():
         return
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT clave, Nombre, ApellidoP, telefono, Correo, Direccion FROM Clientes")
+        cursor.execute("SELECT clave, Nombre, ApellidoP, telefono, Email, Direccion FROM Clientes")
         usuarios = cursor.fetchall()
         if not usuarios:
             print("sin usars")
@@ -134,7 +143,7 @@ def mostrarTablaCorreo():
         return
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT Nombre, Correo, telefono FROM Clientes")
+        cursor.execute("SELECT Nombre, Email, telefono FROM Clientes")
         usuarios = cursor.fetchall()
         if not usuarios:
             print("sin usars")
@@ -145,14 +154,13 @@ def mostrarTablaCorreo():
     finally:
         conn.close()
 
-
 def buscar_clave(clave) -> tuple:
     conn = coneccion()
     if conn == None:
         return None
     try:
         cursor = conn.cursor()
-        query = """SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono FROM Clientes
+        query = """SELECT clave, Nombre, ApellidoP, Direccion, Email, telefono FROM Clientes
             WHERE clave = ?
         """
         cursor.execute(query, clave)
@@ -173,7 +181,7 @@ def buscar_por_nombre(nombre_busqueda) -> list:
 
         filtro = f"{nombre_busqueda}%"
 
-        query = """SELECT clave, Nombre, ApellidoP, Direccion, Correo, telefono
+        query = """SELECT clave, Nombre, ApellidoP, Direccion, Email, telefono
                    FROM Clientes
                    WHERE Nombre LIKE ?"""
 

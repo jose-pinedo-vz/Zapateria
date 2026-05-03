@@ -7,6 +7,9 @@ from Controlador import clientes
 from FuncionesEspeciales import F_claves
 from FuncionesEspeciales import F_whatsapp
 
+
+# xhost +local:
+
 class cliente:
     def __init__(self):
         self.ventana = ctk.CTkToplevel()
@@ -530,15 +533,6 @@ class cliente:
             self.clave_cliente_a_eliminar = valores[0]
             self.nombre_a_eliminar = valores[1]
             print(self.clave_cliente_a_eliminar)
-
-
-
-
-
-
-
-
-
 
 
 
