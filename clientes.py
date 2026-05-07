@@ -19,11 +19,11 @@ class cliente:
         try: self.ventana.state('zoomed')
         except: self.ventana.attributes('-zoomed', True)
 
-        self.ventana.grid_columnconfigure(0, weight=0) # Menú (no se estira)
-        self.ventana.grid_columnconfigure(1, weight=1) # Contenido (sí se estira)
-        self.ventana.grid_rowconfigure(0, weight=1)    # Que ocupe todo el alto
+        self.ventana.grid_columnconfigure(0, weight=0)
+        self.ventana.grid_columnconfigure(1, weight=1)
+        self.ventana.grid_rowconfigure(0, weight=1)
 
-        self.frame_contenido = ctk.CTkFrame(self.ventana, fg_color="#D1D1D1", corner_radius=0)
+        self.frame_contenido = ctk.CTkScrollableFrame( self.ventana, fg_color="#D1D1D1", corner_radius=0, orientation="vertical")
         self.frame_contenido.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
 
@@ -120,6 +120,8 @@ class cliente:
         self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="MENSAJE AL GRUPO DE TELEGRAM", width=150,
             command=lambda: self.embiarTelegram())
         self.btn_oferta.grid(row=1, column=1, padx=10, pady=10)
+
+
 
         self.mostrarTalbe()
         self.ventana.mainloop()
