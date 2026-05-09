@@ -3,39 +3,54 @@ import pyodbc
 def coneccion():
     try:
         DB_CONFIG = (
-            "DRIVER={ODBC Driver 18 for SQL Server};"
-            "SERVER=localhost;"
-            "DATABASE=Zapateria2;"
-            "UID=sa;"
-            "PWD=JitlerSQL2026!;"
-            "Encrypt=yes;"
+            "DRIVER={SQL Server};"
+            "SERVER=.;"
+            "DATABASE=Zapateria;"
             "TrustServerCertificate=yes;"
         )
         conn = pyodbc.connect(DB_CONFIG)
+        print("Conexión exitosa")
         return conn
     except:
-        print("Ubo un error")
-        return None
+        # print("Ubo un error")
+        # return None
+        try:
+            DB_CONFIG = (
+                "DRIVER={ODBC Driver 18 for SQL Server};"
+                "SERVER=localhost;"
+                "DATABASE=Zapateria2;"
+                "UID=sa;"
+                "PWD=JitlerSQL2026!;"
+                "Encrypt=yes;"
+                "TrustServerCertificate=yes;"
+            )
+            conn = pyodbc.connect(DB_CONFIG)
+            print("Funciono")
+            return conn
+        except:
+            print("Ubo un error2")
+            return None
 
 
 def insert(clave, modelo, marca, seccion, categoria) -> None:
-    conn = coneccion()
-    if conn == None:
+    c = coneccion()
+    if c == None:
         return
     try:
-        cursor = conn.cursor()
+        cursor = c.cursor()
         query = """
             INSERT INTO Productos(Clave, Modelo, Marca, Seccion, categoria)
             VALUES (?, ?, ?, ?, ?)"""
         valores = (clave, modelo, marca, seccion, categoria)
         cursor.execute(query, valores)
-        conn.commit()
-
+        c.commit()
     except Exception as e:
         print(f"error de insercion {e}")
-        conn.rollback()
+        c.rollback()
     finally:
-        conn.close()
+        c.close()
+
+
 
 def mostrar() -> list:
     conn = coneccion()

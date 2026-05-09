@@ -7,7 +7,6 @@ from Controlador import clientes
 from FuncionesEspeciales import F_claves
 from FuncionesEspeciales import F_whatsapp
 
-
 # xhost +local:
 
 class cliente:
@@ -78,12 +77,13 @@ class cliente:
         self.clientes.heading("GMAIL", text="GMAIL")
         self.clientes.heading("TELEFONO", text="TELEFONO")
 
-        self.clientes.column("CLAVE", width=120, stretch=True)
-        self.clientes.column("NOMBRE", width=120, stretch=True)
-        self.clientes.column("APELLIDO", width=120, stretch=True)
-        self.clientes.column("DIRECCION", width=120, stretch=True)
-        self.clientes.column("GMAIL", width=120, stretch=True)
-        self.clientes.column("TELEFONO", width=120, stretch=True)
+        self.clientes.column("CLAVE", width=120, stretch=True, anchor="center")
+        self.clientes.column("NOMBRE", width=120, stretch=True, anchor="center")
+        self.clientes.column("APELLIDO", width=120, stretch=True, anchor="center")
+        self.clientes.column("DIRECCION", width=120, stretch=True, anchor="center")
+        self.clientes.column("GMAIL", width=120, stretch=True, anchor="center")
+        self.clientes.column("TELEFONO", width=120, stretch=True, anchor="center")
+
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",
@@ -187,7 +187,7 @@ class cliente:
         self.user_tabla.heading("CORREO", text="CORREO")
         self.user_tabla.heading("NUMERO", text="NUMERO")
 
-        self.user_tabla.column("NOMBRE", width=100)
+        self.user_tabla.column("NOMBRE", width=100, anchor="center")
         self.user_tabla.column("CORREO", width=80, anchor="center")
         self.user_tabla.column("NUMERO",  width=80, anchor="center")
 
@@ -374,12 +374,13 @@ class cliente:
         self.editar_talbla.heading("TELEFONO", text="TELEFONO")
         self.editar_talbla.heading("EMAIL", text="EMAL")
         self.editar_talbla.heading("DIRECCION", text="DIRECCIOPM")
+
         self.editar_talbla.column("CLAVE", width=100, anchor="center")
-        self.editar_talbla.column("NOMBRE", width=150, anchor="w")
-        self.editar_talbla.column("APELLIDOS", width=150, anchor="w")
-        self.editar_talbla.column("TELEFONO", width=150, anchor="w")
-        self.editar_talbla.column("EMAIL", width=150, anchor="w")
-        self.editar_talbla.column("DIRECCION", width=150, anchor="w")
+        self.editar_talbla.column("NOMBRE", width=150, anchor="center")
+        self.editar_talbla.column("APELLIDOS", width=150, anchor="center")
+        self.editar_talbla.column("TELEFONO", width=150, anchor="center"")
+        self.editar_talbla.column("EMAIL", width=150, anchor="center")
+        self.editar_talbla.column("DIRECCION", width=150, anchor="center")
 
         self.editar_talbla.pack(fill="both", expand=True)
 
