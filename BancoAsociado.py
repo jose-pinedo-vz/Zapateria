@@ -16,6 +16,7 @@ class BancoGuachinango():
         self.COLOR_FONDO = "#F2F2F2"
 
         self.Sucursal="Zacatecas Sur"
+        self.CuentaSeleccionada=None
 
         self.CUENTAS_GUACHINANGO = {}
 
@@ -33,9 +34,20 @@ class BancoGuachinango():
         ctk.CTkLabel(self.header, text="BANCO GUACHINANGO", 
                       font=("Arial", 26, "bold"), text_color=self.COLOR_GUACHINANGO).place(relx=0.2, rely=0.5, anchor=ctk.CENTER)
         ctk.CTkLabel(self.header, text="Tu cuenta del ahorro.", 
-                      font=("Arial", 12, "italic"), text_color="white").place(relx=0.45, rely=0.5, anchor=ctk.CENTER)
-        ctk.CTkLabel(self.header, text=f"Sucursal: {self.Sucursal}", 
-                      font=("Arial", 12, "italic"), text_color="white").place(relx=0.8, rely=0.5, anchor=ctk.CENTER)
+                      font=("Arial", 12, "italic"), text_color="white").place(relx=0.2, rely=0.85, anchor=ctk.CENTER)
+
+        ctk.CTkButton(self.header, text="Registrar", fg_color=self.COLOR_GUACHINANGO, 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=self.registrar_cliente).place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
+        
+        ctk.CTkButton(self.header, text="Editar", fg_color="#FFB700", 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=self.actualizar_cliente).place(relx=0.7, rely=0.5,  anchor=ctk.CENTER)
+        
+        ctk.CTkButton(self.header, text="Eliminar", fg_color="#FF3503", 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=self.Eliminar_cliente).place(relx=0.9, rely=0.5,  anchor=ctk.CENTER)
+        
 
         self.main_container = ctk.CTkFrame(self.Ventana, fg_color="transparent")
         self.main_container.place(relx=0.5, rely=0.55, relwidth=0.95, relheight=0.8, anchor=ctk.CENTER)
@@ -43,24 +55,14 @@ class BancoGuachinango():
         self.frame_reg = ctk.CTkFrame(self.main_container, fg_color="white", corner_radius=15)
         self.frame_reg.place(relx=0.2, rely=0.5, relwidth=0.38, relheight=1.0, anchor=ctk.CENTER)
 
-        ctk.CTkLabel(self.frame_reg, text="Apertura de Cuenta", font=("Arial", 18, "bold"), text_color=self.COLOR_NEGRO).place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
-        
-        self.ent_nombre = self.crear_campo(self.frame_reg, "Nombre del Cliente", 0.2)
-        self.ent_apellidop= self.crear_campo(self.frame_reg, "Apellido Paterno", 0.35)
-        self.ent_apellidom = self.crear_campo(self.frame_reg, "Apellido Paterno", 0.5)
-        self.ent_residencia= self.crear_campo(self.frame_reg, "Ciudad de residencia", 0.65)
-        self.ent_deposito = self.crear_campo(self.frame_reg, "Deposito Inicial ($)", 0.8)
-        
-
-        ctk.CTkButton(self.frame_reg, text="Registrar Cuenta", fg_color=self.COLOR_GUACHINANGO, 
-                      text_color="white", font=("Arial", 13, "bold"), height=40,
-                      command=self.registrar_cliente).place(relx=0.5, rely=0.9, relwidth=0.8, anchor=ctk.CENTER)
 
         self.frame_lista = ctk.CTkFrame(self.main_container, fg_color="white", corner_radius=15)
         self.frame_lista.place(relx=0.7, rely=0.5, relwidth=0.58, relheight=1.0, anchor=ctk.CENTER)
 
-        ctk.CTkLabel(self.frame_lista, text="Clientes Registrados", font=("Arial", 18, "bold"),text_color="black").place(relx=0.5, rely=0.08, anchor=ctk.CENTER)
-
+        ctk.CTkLabel(self.frame_lista, text="Clientes Registrados", font=("Arial", 18, "bold"),text_color="black").place(relx=0.5, rely=0.05, anchor=ctk.CENTER)
+        ctk.CTkLabel(self.frame_lista, text=f"Sucursal: {self.Sucursal}", 
+                      font=("Arial", 12, "italic"), text_color="black").place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
         self.search_bar = ctk.CTkEntry(self.frame_lista, placeholder_text="Buscar por numero de cuenta...", width=300)
         self.search_bar.place(relx=0.5, rely=0.18, anchor=ctk.CENTER)
         btn_buscar=ctk.CTkButton(self.frame_lista,text="🔍", width=10,command=self.Busqueda)
@@ -163,6 +165,119 @@ class BancoGuachinango():
         messagebox.showinfo("Guachinango", f"Tarjeta {numero} creada exitosamente.")
 
     def registrar_cliente(self):
+        self.LimpiarFrame(self.frame_reg)
+        ctk.CTkLabel(self.frame_reg, text="Apertura de Cuenta", font=("Arial", 18, "bold"), text_color=self.COLOR_NEGRO).place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
+        self.ent_nombre = self.crear_campo(self.frame_reg, "Nombre del Cliente", 0.2)
+        self.ent_apellidop= self.crear_campo(self.frame_reg, "Apellido Paterno", 0.35)
+        self.ent_apellidom = self.crear_campo(self.frame_reg, "Apellido Paterno", 0.5)
+        self.ent_residencia= self.crear_campo(self.frame_reg, "Ciudad de residencia", 0.65)
+        self.ent_deposito = self.crear_campo(self.frame_reg, "Deposito Inicial ($)", 0.8)
+        
+
+        ctk.CTkButton(self.frame_reg, text="Registrar Cuenta", fg_color=self.COLOR_GUACHINANGO, 
+                      text_color="white", font=("Arial", 13, "bold"), height=40,
+                      command=self.registrar).place(relx=0.5, rely=0.9, relwidth=0.8, anchor=ctk.CENTER)
+
+    def registrar(self):
+        try:
+            nombre = self.ent_nombre.get().strip()
+            apellidop = self.ent_apellidop.get().strip()
+            apellidom = self.ent_apellidom.get().strip()
+            ubicacion = self.ent_residencia.get().strip()
+    
+            if not all([nombre, apellidop, apellidom, ubicacion]):
+                messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
+                return
+            
+            if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
+                messagebox.showwarning("Datos inválidos", "Los nombres y apellidos no pueden contener números.")
+                return
+
+            ClaveCuenta = self.CrearClave()
+            Pin = self.CrearPin()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error inesperado: {e}")
+            return
+        
+        try:
+            monto = float(self.ent_deposito.get())
+        except:
+            messagebox.showerror("Error", "Monto de deposito invalido.")
+            return
+        
+        
+        self.GuardarNuevoUsuario(ClaveCuenta,nombre,apellidop,apellidom,Pin,ubicacion,monto)
+        self.actualizar_diccionario()
+        self.limpiar_campos()
+        self.actualizar_lista()
+        
+
+    def actualizar_cliente(self):
+        try:
+            nombre = self.ent_nombre.get().strip()
+            apellidop = self.ent_apellidop.get().strip()
+            apellidom = self.ent_apellidom.get().strip()
+            ubicacion = self.ent_residencia.get().strip()
+    
+            if not all([nombre, apellidop, apellidom, ubicacion]):
+                messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
+                return
+            
+            if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
+                messagebox.showwarning("Datos inválidos", "Los nombres y apellidos no pueden contener números.")
+                return
+
+            ClaveCuenta = self.CrearClave()
+            Pin = self.CrearPin()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error inesperado: {e}")
+            return
+        
+        try:
+            monto = float(self.ent_deposito.get())
+        except:
+            messagebox.showerror("Error", "Monto de deposito invalido.")
+            return
+        
+        
+        self.GuardarNuevoUsuario(ClaveCuenta,nombre,apellidop,apellidom,Pin,ubicacion,monto)
+        self.actualizar_diccionario()
+        self.limpiar_campos()
+        self.actualizar_lista()
+    
+    def Consulta_cliente(self,cuenta):
+        self.Emergente= ctk.CTkToplevel()
+        self.Emergente.title("Datos del cliente")
+        self.Emergente.geometry("500x500")
+        self.Emergente.configure(fg_color=self.COLOR_FONDO)
+        self.Emergente.grab_set()
+        Cliente={"Clave","Saldo","Sucursal"}
+        conexion=ConexionBanco.conectar_db()
+        cursor=conexion.cursor()
+        print(cuenta)
+        ctk.CTkLabel(self.Emergente, text=f"Información de la cuenta", font=("Arial", 15, "bold"),text_color="black"
+                         ).place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
+        cursor.execute("SELECT distinct Cliente.ClaveCuenta,NombreCliente,ApellidoM,ApeelidoP,Saldo,Sucursal,numero_tarjeta FROM Cuenta,Cliente,Tarjeta WHERE Cliente.ClaveCuenta=Cuenta.ClaveCuenta and  Cliente.ClaveCuenta=id_cuenta_asociada and Cliente.ClaveCuenta=?",
+                       (cuenta,))
+        for fila in cursor:
+            print(fila)
+            ctk.CTkLabel(self.Emergente, text=f"Clave:\n{fila.ClaveCuenta}", font=("Arial", 15, "bold"),text_color="black"
+                            ).place(relx=0.5, rely=0.25, anchor=ctk.CENTER)
+            ctk.CTkLabel(self.Emergente, text=f"Saldo:\n{fila.Saldo}", font=("Arial", 15, "bold"),text_color="black"
+                            ).place(relx=0.5, rely=0.35, anchor=ctk.CENTER)
+            ctk.CTkLabel(self.Emergente, text=f"Sucursal donde la\ncuenta fue abierta:\n{fila.Sucursal}", font=("Arial", 15, "bold"),text_color="black"
+                            ).place(relx=0.5, rely=0.45, anchor=ctk.CENTER)
+        
+        cursor.close()
+        conexion.close()
+
+        
+
+    def Eliminar_cliente(self):
         try:
             nombre = self.ent_nombre.get().strip()
             apellidop = self.ent_apellidop.get().strip()
@@ -242,15 +357,20 @@ class BancoGuachinango():
         for cuenta, datos in self.CUENTAS_GUACHINANGO.items():
             card = ctk.CTkFrame(self.scroll_cuentas, fg_color=self.COLOR_FONDO, corner_radius=10, height=60)
             card.pack(fill="x", pady=5, padx=5) 
+
+            card.bind("<Button-1>", lambda: self.Seleccionado(cuenta))
             
             info = f"CUENTA: {cuenta} | {datos['nombre']}"
             ctk.CTkLabel(card, text=info, font=("Arial", 12, "bold"),text_color="black").place(relx=0.25, rely=0.5, anchor=ctk.CENTER)
             
             saldo_lbl = ctk.CTkLabel(card, text=f"${datos['saldo']:,.2f}", text_color=self.COLOR_GUACHINANGO, font=("Arial", 14, "bold"))
-            saldo_lbl.place(relx=0.75, rely=0.5, anchor=ctk.CENTER)
+            saldo_lbl.place(relx=0.6, rely=0.5, anchor=ctk.CENTER)
             
             ctk.CTkButton(card, text="+", width=30, height=30, fg_color=self.COLOR_NEGRO, 
                           command=lambda n=cuenta: self.abrir_deposito(n)).place(relx=0.92, rely=0.5, anchor=ctk.CENTER)
+            
+            ctk.CTkButton(card,text="🔍", width=10,command= lambda: self.Consulta_cliente(cuenta)
+                          ).place(relx=0.8, rely=0.5, anchor=ctk.CENTER)
 
     def abrir_deposito(self, cuenta):
         #dialog1 = ctk.CTkInputDialog(text=f"Monto a depositar:", title="Deposito Guachinango")
@@ -359,7 +479,12 @@ class BancoGuachinango():
         pdf.output(ruta_carpeta)
 
         print(f"PDF {nombre_archivo} creado con éxito.")
-
+    
+    def LimpiarFrame(self,widget):
+        for w in widget.winfo_children(): w.destroy()
+    
+    def Seleccionado(self,event,cuenta):
+        self.CuentaSeleccionada=cuenta
 
 obj=BancoGuachinango()
 obj.Iniciar()

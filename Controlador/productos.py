@@ -3,18 +3,16 @@ import pyodbc
 def coneccion():
     try:
         DB_CONFIG = (
-            "DRIVER={ODBC Driver 18 for SQL Server};"
+            "DRIVER={SQL Server};"
             "SERVER=localhost;"
-            "DATABASE=Zapateria2;"
-            "UID=sa;"
-            "PWD=JitlerSQL2026!;"
-            "Encrypt=yes;"
+            "DATABASE=Zapateria;"
             "TrustServerCertificate=yes;"
         )
         conn = pyodbc.connect(DB_CONFIG)
+        print("conexion exitosa")
         return conn
     except:
-        print("Ubo un error")
+        print("Hubo un error")
         return None
 
 

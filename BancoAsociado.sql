@@ -74,3 +74,6 @@ CREATE TABLE Tarjeta (
     id_cuenta_asociada varchar(5) NOT NULL,
     FOREIGN KEY (id_cuenta_asociada) REFERENCES Cuenta(ClaveCuenta)
 );
+SELECT distinct Cliente.ClaveCuenta,NombreCliente,ApellidoM,ApeelidoP,Saldo,Sucursal,numero_tarjeta 
+FROM Cuenta,Cliente,Tarjeta 
+WHERE Cliente.ClaveCuenta=Cuenta.ClaveCuenta and  Cliente.ClaveCuenta=id_cuenta_asociada and Cliente.ClaveCuenta='tl-01'

@@ -106,32 +106,50 @@ foreign key (categoria) REFERENCES categoria(id_categoria),
 FOREIGN KEY (Modelo) REFERENCES modelo(clave)) 
 
 
-create table Inventario
-(Clave char(5), 
-CantidadProducto int, 
-Talla int, 
-FechaIngreso datetime, 
-Precio DECIMAL(10,2), 
-Color int, 
-RutaImagen CHAR(50), 
-
-PRIMARY key(Clave), 
-foreign key (Clave) references Productos(Clave), 
-FOREIGN KEY (color) REFERENCES color(id_color), 
-FOREIGN KEY (Talla) REFERENCES Talla(id_talla)) 
+create table Inventario(
+    Clave char(5), 
+    CantidadProducto int, 
+    Talla int, 
+    FechaIngreso datetime, 
+    Precio DECIMAL(10,2), 
+    Color char(100), 
+    RutaImagen CHAR(300), 
 
 
-Create table Clientes 
-(clave CHAR(5) PRIMARY KEY,
-Direccion int, 
-Email char(20), 
-telefono INT,
-Nombre varchar(15), 
-ApellidoP varchar(15),
+    PRIMARY key(Clave, talla, color), 
+    foreign key (Clave) references Productos(Clave)
+)
+ 
+create table color
+(id_color int PRIMARY KEY, 
+color char(10)) 
 
-foreign key (Nombre,ApellidoP) references Usuario(Nombre,ApellidoP),
-foreign KEY (Direccion) REFERENCES Direccion(idDireccion), 
-foreign KEY (telefono) REFERENCES Telefonos(id_telefono)) 
+
+CREATE TABLE Talla
+(id_talla int PRIMARY KEY, 
+talla CHAR(2)) 
+
+
+CREATE TABLE Productos (
+    Clave CHAR(5) PRIMARY KEY, 
+    Modelo VARCHAR(100),
+    Marca VARCHAR(100),   
+    Seccion VARCHAR(100), 
+    Categoria VARCHAR(100)
+);
+ 
+ 
+
+CREATE TABLE Clientes (
+    clave CHAR(5) PRIMARY KEY,
+    Nombre VARCHAR(50),        
+    ApellidoP VARCHAR(50),     
+    Email VARCHAR(100),       
+    Direccion VARCHAR(200),    
+    telefono BIGINT            
+);
+GO
+ 
 
 
 create table Apartado
