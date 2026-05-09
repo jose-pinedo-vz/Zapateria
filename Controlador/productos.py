@@ -17,23 +17,24 @@ def coneccion():
 
 
 def insert(clave, modelo, marca, seccion, categoria) -> None:
-    conn = coneccion()
-    if conn == None:
+    c = coneccion()
+    if c == None:
         return
     try:
-        cursor = conn.cursor()
+        cursor = c.cursor()
         query = """
             INSERT INTO Productos(Clave, Modelo, Marca, Seccion, categoria)
             VALUES (?, ?, ?, ?, ?)"""
         valores = (clave, modelo, marca, seccion, categoria)
         cursor.execute(query, valores)
-        conn.commit()
-
+        c.commit()
     except Exception as e:
         print(f"error de insercion {e}")
-        conn.rollback()
+        c.rollback()
     finally:
-        conn.close()
+        c.close()
+
+
 
 def mostrar() -> list:
     conn = coneccion()

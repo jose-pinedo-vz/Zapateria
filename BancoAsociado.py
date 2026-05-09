@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from CTkMessagebox import CTkMessagebox
 import random
 import ConexionBanco
 from decimal import Decimal
@@ -36,17 +37,6 @@ class BancoGuachinango():
         ctk.CTkLabel(self.header, text="Tu cuenta del ahorro.", 
                       font=("Arial", 12, "italic"), text_color="white").place(relx=0.2, rely=0.85, anchor=ctk.CENTER)
 
-        ctk.CTkButton(self.header, text="Registrar", fg_color=self.COLOR_GUACHINANGO, 
-                      text_color="white", font=("Arial", 13, "bold"), height=10,
-                      command=self.registrar_cliente).place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
-        
-        ctk.CTkButton(self.header, text="Editar", fg_color="#FFB700", 
-                      text_color="white", font=("Arial", 13, "bold"), height=10,
-                      command=self.actualizar_cliente).place(relx=0.7, rely=0.5,  anchor=ctk.CENTER)
-        
-        ctk.CTkButton(self.header, text="Eliminar", fg_color="#FF3503", 
-                      text_color="white", font=("Arial", 13, "bold"), height=10,
-                      command=self.Eliminar_cliente).place(relx=0.9, rely=0.5,  anchor=ctk.CENTER)
         
 
         self.main_container = ctk.CTkFrame(self.Ventana, fg_color="transparent")
@@ -62,6 +52,10 @@ class BancoGuachinango():
         ctk.CTkLabel(self.frame_lista, text="Clientes Registrados", font=("Arial", 18, "bold"),text_color="black").place(relx=0.5, rely=0.05, anchor=ctk.CENTER)
         ctk.CTkLabel(self.frame_lista, text=f"Sucursal: {self.Sucursal}", 
                       font=("Arial", 12, "italic"), text_color="black").place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
+        ctk.CTkButton(self.frame_lista, text="Registrar", fg_color=self.COLOR_GUACHINANGO, 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=self.registrar_cliente).place(relx=0.8, rely=0.1, anchor=ctk.CENTER)
         
         self.search_bar = ctk.CTkEntry(self.frame_lista, placeholder_text="Buscar por numero de cuenta...", width=300)
         self.search_bar.place(relx=0.5, rely=0.18, anchor=ctk.CENTER)
@@ -163,6 +157,8 @@ class BancoGuachinango():
         """, (numero, cvv, id_cuenta))
         conexion.commit()
         messagebox.showinfo("Guachinango", f"Tarjeta {numero} creada exitosamente.")
+        cursor.close()
+        conexion.close()
 
     def registrar_cliente(self):
         self.LimpiarFrame(self.frame_reg)
@@ -170,7 +166,7 @@ class BancoGuachinango():
         
         self.ent_nombre = self.crear_campo(self.frame_reg, "Nombre del Cliente", 0.2)
         self.ent_apellidop= self.crear_campo(self.frame_reg, "Apellido Paterno", 0.35)
-        self.ent_apellidom = self.crear_campo(self.frame_reg, "Apellido Paterno", 0.5)
+        self.ent_apellidom = self.crear_campo(self.frame_reg, "Apellido Materno", 0.5)
         self.ent_residencia= self.crear_campo(self.frame_reg, "Ciudad de residencia", 0.65)
         self.ent_deposito = self.crear_campo(self.frame_reg, "Deposito Inicial ($)", 0.8)
         
@@ -187,11 +183,11 @@ class BancoGuachinango():
             ubicacion = self.ent_residencia.get().strip()
     
             if not all([nombre, apellidop, apellidom, ubicacion]):
-                messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
+                CTkMessagebox(title="Error", message="Todos los campos son obligatorios.", icon="cancel")
                 return
             
             if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
-                messagebox.showwarning("Datos inválidos", "Los nombres y apellidos no pueden contener números.")
+                CTkMessagebox(title="Error", message="Los nombres y apellidos no pueden contener números.", icon="cancel")
                 return
 
             ClaveCuenta = self.CrearClave()
@@ -214,120 +210,211 @@ class BancoGuachinango():
         self.actualizar_lista()
         
 
-    def actualizar_cliente(self):
-        try:
-            nombre = self.ent_nombre.get().strip()
-            apellidop = self.ent_apellidop.get().strip()
-            apellidom = self.ent_apellidom.get().strip()
-            ubicacion = self.ent_residencia.get().strip()
-    
-            if not all([nombre, apellidop, apellidom, ubicacion]):
-                messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
-                return
-            
-            if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
-                messagebox.showwarning("Datos inválidos", "Los nombres y apellidos no pueden contener números.")
-                return
+    def actualizar_cliente(self,cuenta):
+        if hasattr(self, 'Emergente'):
+            self.Emergente.destroy()
+        
+        conexion=ConexionBanco.conectar_db()
+        cursor=conexion.cursor()
 
-            ClaveCuenta = self.CrearClave()
-            Pin = self.CrearPin()
+        cursor.execute("""
+                SELECT distinct Cliente.ClaveCuenta, NombreCliente, ApellidoM, ApellidoP, ciudad
+                FROM Cuenta, Cliente, Ubicacion
+                WHERE Cliente.ClaveCuenta = Cuenta.ClaveCuenta
+                AND Cliente.ClaveCuenta = Ubicacion.Clave
+                AND Cliente.ClaveCuenta = ? 
+                AND Cliente.Activo = 1
+            """, (cuenta,))
+        
+        fila=cursor.fetchone()
+        if fila:
+            self.ent_nombre = self.crear_campo(self.frame_reg, "Nombre del Cliente", 0.2)
+            self.ent_apellidop= self.crear_campo(self.frame_reg, "Apellido Paterno", 0.35)
+            self.ent_apellidom = self.crear_campo(self.frame_reg, "Apellido Materno", 0.5)
+            self.ent_residencia= self.crear_campo(self.frame_reg, "Ciudad de residencia", 0.65)
+
+            self.ent_nombre.insert(0,fila.NombreCliente)
+            self.ent_apellidop.insert(0, fila.ApellidoP)
+            self.ent_apellidom.insert(0, fila.ApellidoM)
+            self.ent_residencia.insert(0,fila.ciudad)
+
+            ctk.CTkButton(self.frame_reg, text="Aceptar cambios", fg_color=self.COLOR_GUACHINANGO, 
+                        text_color="white", font=("Arial", 13, "bold"), height=40,
+                        command=lambda:self.Actualizar(cuenta)).place(relx=0.25, rely=0.9, relwidth=0.4, anchor=ctk.CENTER)
             
-        except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error inesperado: {e}")
-            return
+            ctk.CTkButton(self.frame_reg, text="Cancelar", fg_color="#FFAB03", 
+                        text_color="white", font=("Arial", 13, "bold"), height=40,
+                        command=lambda: self.LimpiarFrame(self.frame_reg)).place(relx=0.75, rely=0.9, relwidth=0.4, anchor=ctk.CENTER)
+
+        else:
+            CTkMessagebox(title="Error", message="El cliente no existe en la base de datos", icon="cancel")
+        cursor.close()
+        conexion.close()
+
+       
+    def Actualizar(self,cuenta):
+        band = self.mostrar_confirmacion()
+        if band: 
+            try:
+                nombre = self.ent_nombre.get().strip()
+                apellidop = self.ent_apellidop.get().strip()
+                apellidom = self.ent_apellidom.get().strip()
+                ubicacion = self.ent_residencia.get().strip()
+
+                if not all([nombre, apellidop, apellidom, ubicacion]):
+                    CTkMessagebox(title="Error", message="Todos los campos son obligatorios.", icon="cancel")
+                    return
+                
+                if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
+                    CTkMessagebox(title="Error", message="Los nombres y apellidos no pueden contener números.", icon="cancel")
+                    return
+                
+                conexion=ConexionBanco.conectar_db()
+                cursor=conexion.cursor()
+
+                cursor.execute("""UPDATE Cliente
+                           SET NombreCliente = ?, ApellidoM = ? , ApellidoP = ?
+                           WHERE ClaveCuenta = ?""",
+                           (nombre,apellidom,apellidop,cuenta))
+                
+                cursor.execute("""UPDATE Ubicacion
+                           SET Ciudad = ?
+                           WHERE Clave = ?""",
+                           (ubicacion,cuenta))
+                conexion.commit()
+                cursor.close()
+                conexion.close()
+                self.actualizar_diccionario()
+                self.actualizar_lista()
+                self.LimpiarFrame(self.frame_reg)
+                CTkMessagebox(title="Éxito", message="Cuenta modificada correctamente.", icon="check")
+                
+            except Exception as e:
+                CTkMessagebox(title="Error", message=f"Ocurrió un error inesperado: {e}", icon="cancel")
+                return
+        else:
+            self.LimpiarFrame(self.frame_reg)
+            CTkMessagebox(title="Cancelado", message="Operacion cancelada", icon="cancel")
+            
         
-        try:
-            monto = float(self.ent_deposito.get())
-        except:
-            messagebox.showerror("Error", "Monto de deposito invalido.")
-            return
-        
-        
-        self.GuardarNuevoUsuario(ClaveCuenta,nombre,apellidop,apellidom,Pin,ubicacion,monto)
-        self.actualizar_diccionario()
-        self.limpiar_campos()
-        self.actualizar_lista()
     
+        
     def Consulta_cliente(self,cuenta):
         self.Emergente= ctk.CTkToplevel()
         self.Emergente.title("Datos del cliente")
         self.Emergente.geometry("500x500")
         self.Emergente.configure(fg_color=self.COLOR_FONDO)
         self.Emergente.grab_set()
-        Cliente={"Clave","Saldo","Sucursal"}
+
         conexion=ConexionBanco.conectar_db()
         cursor=conexion.cursor()
         print(cuenta)
-        ctk.CTkLabel(self.Emergente, text=f"Información de la cuenta", font=("Arial", 15, "bold"),text_color="black"
+        frame=ctk.CTkFrame(master=self.Emergente,bg_color=self.COLOR_FONDO,corner_radius=50)
+        frame.pack(fill="both", expand=True,pady=10, padx=10)
+        ctk.CTkLabel(frame, text=f"Información de la cuenta:", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
                          ).place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
         
-        cursor.execute("SELECT distinct Cliente.ClaveCuenta,NombreCliente,ApellidoM,ApeelidoP,Saldo,Sucursal,numero_tarjeta FROM Cuenta,Cliente,Tarjeta WHERE Cliente.ClaveCuenta=Cuenta.ClaveCuenta and  Cliente.ClaveCuenta=id_cuenta_asociada and Cliente.ClaveCuenta=?",
-                       (cuenta,))
-        for fila in cursor:
-            print(fila)
-            ctk.CTkLabel(self.Emergente, text=f"Clave:\n{fila.ClaveCuenta}", font=("Arial", 15, "bold"),text_color="black"
-                            ).place(relx=0.5, rely=0.25, anchor=ctk.CENTER)
-            ctk.CTkLabel(self.Emergente, text=f"Saldo:\n{fila.Saldo}", font=("Arial", 15, "bold"),text_color="black"
-                            ).place(relx=0.5, rely=0.35, anchor=ctk.CENTER)
-            ctk.CTkLabel(self.Emergente, text=f"Sucursal donde la\ncuenta fue abierta:\n{fila.Sucursal}", font=("Arial", 15, "bold"),text_color="black"
-                            ).place(relx=0.5, rely=0.45, anchor=ctk.CENTER)
+        cursor.execute("""
+                SELECT distinct Cliente.ClaveCuenta, NombreCliente, ApellidoM, ApellidoP, Saldo, Sucursal, numero_tarjeta, ciudad
+                FROM Cuenta, Cliente, Tarjeta ,Ubicacion
+                WHERE Cliente.ClaveCuenta = Cuenta.ClaveCuenta 
+                AND Clave = Cuenta.ClaveCuenta
+                AND Cliente.ClaveCuenta = id_cuenta_asociada 
+                AND Cliente.ClaveCuenta = ? 
+                AND Cliente.Activo = 1
+            """, (cuenta,))
         
+        fila = cursor.fetchone()
+
+        if fila:
+            print(fila)
+            usuario={"cuenta":fila.ClaveCuenta,
+                     "nombre":fila.NombreCliente,
+                     "apellidop":fila.ApellidoP,
+                     "apellidom":fila.ApellidoM}
+            
+            ctk.CTkLabel(frame, text=f"{fila.ClaveCuenta}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.15, anchor=ctk.CENTER)
+            ctk.CTkLabel(frame, text=f"A nombre de:\n{fila.NombreCliente}\n{fila.ApellidoP}\n{fila.ApellidoM}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.25, anchor=ctk.CENTER)
+            ctk.CTkLabel(frame, text=f"Residencia:\n{fila.ciudad}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.4, anchor=ctk.CENTER)
+            ctk.CTkLabel(frame, text=f"Saldo:\n{fila.Saldo}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.5, anchor=ctk.CENTER)
+            ctk.CTkLabel(frame, text=f"Sucursal donde la\ncuenta fue abierta:\n{fila.Sucursal}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.65, anchor=ctk.CENTER)
+            ctk.CTkLabel(frame, text=f"Clabe de tarjeta:\n{fila.numero_tarjeta}", font=("Arial", 15, "bold"),text_color=self.COLOR_FONDO
+                            ).place(relx=0.5, rely=0.8, anchor=ctk.CENTER)
+            
+            ctk.CTkButton(frame, text="Editar", fg_color="#FFB700", 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=lambda: self.actualizar_cliente(cuenta)).place(relx=0.25, rely=0.9,  anchor=ctk.CENTER)
+        
+            ctk.CTkButton(frame, text="Eliminar", fg_color="#FF3503", 
+                      text_color="white", font=("Arial", 13, "bold"), height=10,
+                      command=lambda: self.Eliminar_cliente(cuenta)).place(relx=0.75, rely=0.9,  anchor=ctk.CENTER)
+        else:
+            CTkMessagebox(title="Error", message="El cliente no existe en la base de datos", icon="cancel")
+
+
         cursor.close()
         conexion.close()
 
         
 
-    def Eliminar_cliente(self):
-        try:
-            nombre = self.ent_nombre.get().strip()
-            apellidop = self.ent_apellidop.get().strip()
-            apellidom = self.ent_apellidom.get().strip()
-            ubicacion = self.ent_residencia.get().strip()
-    
-            if not all([nombre, apellidop, apellidom, ubicacion]):
-                messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
-                return
-            
-            if not all(x.replace(" ", "").isalpha() for x in [nombre, apellidop, apellidom]):
-                messagebox.showwarning("Datos inválidos", "Los nombres y apellidos no pueden contener números.")
-                return
+    def Eliminar_cliente(self,cuenta):
+        band = self.mostrar_confirmacion()
+        if band: 
+            try:
+                conexion = ConexionBanco.conectar_db()
+                cursor = conexion.cursor()
 
-            ClaveCuenta = self.CrearClave()
-            Pin = self.CrearPin()
-            
-        except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error inesperado: {e}")
-            return
-        
-        try:
-            monto = float(self.ent_deposito.get())
-        except:
-            messagebox.showerror("Error", "Monto de deposito invalido.")
-            return
-        
-        
-        self.GuardarNuevoUsuario(ClaveCuenta,nombre,apellidop,apellidom,Pin,ubicacion,monto)
-        self.actualizar_diccionario()
-        self.limpiar_campos()
-        self.actualizar_lista()
+                cursor.execute("UPDATE Cliente SET Activo = 0 WHERE ClaveCuenta = ?", (cuenta,))
+                
+                conexion.commit()
+                cursor.close()
+                conexion.close()
+
+                if hasattr(self, 'Emergente'):
+                    self.Emergente.destroy()
+
+                self.actualizar_diccionario()
+                self.actualizar_lista()
+                
+                CTkMessagebox(title="Éxito", message="Cuenta desactivada correctamente.", icon="check")
+
+            except Exception as e:
+                CTkMessagebox(title="Error", message=f"No se pudo desactivar la cuenta: {e}", icon="cancel")
+        else:
+            CTkMessagebox(title="Cancelado", message="Operacion cancelada", icon="cancel")
 
     def GuardarNuevoUsuario(self,ClaveCuenta,nombre,apellidop,apellidom,Pin,ubicacion,monto):
-        conexion=ConexionBanco.conectar_db()
-        cursor=conexion.cursor()
+        conexion = None
+        try:
+            conexion = ConexionBanco.conectar_db()
+            cursor = conexion.cursor()
 
-        cursor.execute("INSERT INTO Cliente (ClaveCuenta, NombreCliente, ApellidoM, ApeelidoP) VALUES (?,?,?,?)",
-        (ClaveCuenta,nombre,apellidom,apellidop))
+            cursor.execute("INSERT INTO Cliente (ClaveCuenta, NombreCliente, ApellidoM, ApellidoP) VALUES (?,?,?,?)",
+                        (ClaveCuenta, nombre, apellidom, apellidop))
 
-        cursor.execute("INSERT INTO Cuenta (ClaveCuenta,Saldo,Sucursal,PIN) VALUES (?,?,?,?)",
-        (ClaveCuenta,monto,self.Sucursal,Pin))
+            cursor.execute("INSERT INTO Cuenta (ClaveCuenta, Saldo, Sucursal, PIN) VALUES (?,?,?,?)",
+                        (ClaveCuenta, monto, self.Sucursal, Pin))
 
-        cursor.execute("INSERT INTO Ubicacion (Nombre,Ciudad,Clave) VALUES (?,?,?)",
-        (nombre,ubicacion,ClaveCuenta))
-        conexion.commit()
-        cursor.close()
-        conexion.close()
-        messagebox.showinfo("Guachinango", f"Cuenta creada con exito!\nNo. Cuenta: {ClaveCuenta}\nSaldo: ${monto}")
-        self.CrearTajeta(ClaveCuenta)
+            cursor.execute("INSERT INTO Ubicacion (Ciudad, Clave) VALUES (?,?)",
+                        (ubicacion, ClaveCuenta))
+
+            conexion.commit()
+            CTkMessagebox(title="Guachinango", message="Cuenta creada con éxito.", icon="check")
+            self.CrearTajeta(ClaveCuenta)
+
+        except Exception as e:
+            if conexion: conexion.rollback()
+            CTkMessagebox(title="Error", message=f"No se pudo guardar: {e}", icon="cancel")
+
+        finally:
+            if conexion:
+                cursor.close() 
+                conexion.close() 
         
 
         
@@ -340,16 +427,23 @@ class BancoGuachinango():
         self.ent_deposito.delete(0, 'end')
     
     def actualizar_diccionario(self):
-        conexion=ConexionBanco.conectar_db()
-        cursor=conexion.cursor()
-        cursor.execute("SELECT Cuenta.ClaveCuenta,Cliente.NombreCliente,Saldo FROM Cuenta,Cliente WHERE Cliente.ClaveCuenta=Cuenta.ClaveCuenta")
+        self.CUENTAS_GUACHINANGO = {} 
+        conexion = ConexionBanco.conectar_db()
+        cursor = conexion.cursor()
+        cursor.execute("""
+            SELECT Cuenta.ClaveCuenta, Cliente.NombreCliente, Saldo 
+            FROM Cuenta 
+            JOIN Cliente ON Cliente.ClaveCuenta = Cuenta.ClaveCuenta 
+            WHERE Cliente.Activo = 1
+        """)
         for fila in cursor:
-            self.CUENTAS_GUACHINANGO[fila.ClaveCuenta]={
+            self.CUENTAS_GUACHINANGO[fila.ClaveCuenta] = {
                 "nombre": fila.NombreCliente,
-                "saldo":fila.Saldo}
+                "saldo": fila.Saldo
+            }
         cursor.close()
         conexion.close()
-        
+            
 
     def actualizar_lista(self):
         for w in self.scroll_cuentas.winfo_children(): w.destroy()
@@ -358,7 +452,9 @@ class BancoGuachinango():
             card = ctk.CTkFrame(self.scroll_cuentas, fg_color=self.COLOR_FONDO, corner_radius=10, height=60)
             card.pack(fill="x", pady=5, padx=5) 
 
-            card.bind("<Button-1>", lambda: self.Seleccionado(cuenta))
+            card.bind("<Button-1>", lambda e, c=cuenta: self.Seleccionado(c))
+            card.bind("<Enter>", lambda e, c=card: c.configure(fg_color="#A5A5A5"))
+            card.bind("<Leave>", lambda e, c=card: c.configure(fg_color=self.COLOR_FONDO))
             
             info = f"CUENTA: {cuenta} | {datos['nombre']}"
             ctk.CTkLabel(card, text=info, font=("Arial", 12, "bold"),text_color="black").place(relx=0.25, rely=0.5, anchor=ctk.CENTER)
@@ -367,10 +463,8 @@ class BancoGuachinango():
             saldo_lbl.place(relx=0.6, rely=0.5, anchor=ctk.CENTER)
             
             ctk.CTkButton(card, text="+", width=30, height=30, fg_color=self.COLOR_NEGRO, 
-                          command=lambda n=cuenta: self.abrir_deposito(n)).place(relx=0.92, rely=0.5, anchor=ctk.CENTER)
+                          command=lambda c=cuenta: self.abrir_deposito(c)).place(relx=0.92, rely=0.5, anchor=ctk.CENTER)
             
-            ctk.CTkButton(card,text="🔍", width=10,command= lambda: self.Consulta_cliente(cuenta)
-                          ).place(relx=0.8, rely=0.5, anchor=ctk.CENTER)
 
     def abrir_deposito(self, cuenta):
         #dialog1 = ctk.CTkInputDialog(text=f"Monto a depositar:", title="Deposito Guachinango")
@@ -410,12 +504,13 @@ class BancoGuachinango():
                     self.actualizar_diccionario()
                     self.actualizar_lista()
                     self.Emergente.destroy()
-                    messagebox.showinfo("Exito", "Deposito procesado.")
+                    
+                    CTkMessagebox(title="Éxito", message="Deposito procesado.", icon="check")
                 else:
                     messagebox.showinfo("Error", "Deposito cancelado.")
 
             except:
-                messagebox.showerror("Error", "Valores invalidos.")
+                CTkMessagebox(title="Error", message="Valores invalidos.", icon="cancel")
             
         aceptar=ctk.CTkButton(self.Emergente, text="Aceptar",
                                 command=Confirmar)
@@ -427,21 +522,25 @@ class BancoGuachinango():
         
     def Realizar_deposito(self,monto,destino,remitente):
         conexion = None
+        cursor = None 
         try:
-            conexion=ConexionBanco.conectar_db()
-            cursor=conexion.cursor()
+            conexion = ConexionBanco.conectar_db()
+            cursor = conexion.cursor()
+            
             cursor.execute("UPDATE Cuenta SET Saldo = Saldo - ? WHERE ClaveCuenta = ? AND Saldo >= ?",
-                        (monto,remitente,monto))
+                            (monto, remitente, monto))
+            
             cursor.execute("UPDATE Cuenta SET Saldo = Saldo + ? WHERE ClaveCuenta = ?",
-                        (monto,destino))
+                            (monto, destino))
             conexion.commit()
             return True
         except Exception as e:
             if conexion:
                 conexion.rollback()
-            print(f"Transacción abortada. Los cambios fueron revertidos: {e}")
             return False
         finally:
+            if cursor: 
+                cursor.close() 
             if conexion:
                 conexion.close()
     
@@ -483,8 +582,26 @@ class BancoGuachinango():
     def LimpiarFrame(self,widget):
         for w in widget.winfo_children(): w.destroy()
     
-    def Seleccionado(self,event,cuenta):
+    def Seleccionado(self,cuenta):
         self.CuentaSeleccionada=cuenta
+        self.Consulta_cliente(cuenta)
+    
+    def mostrar_confirmacion(self):
+        msg = CTkMessagebox(
+            title="Confirmar Acción",
+            message="¿Estás seguro de que deseas realizar esta operación en Banco Guachinango?",
+            icon="question",
+            option_1="Cancelar",
+            option_2="Confirmar"
+        )
+        respuesta = msg.get()
+        
+        if respuesta == "Confirmar":
+            return True
+        else:
+            msg.destroy()
+            return False
+        
 
 obj=BancoGuachinango()
 obj.Iniciar()

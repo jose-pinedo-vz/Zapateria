@@ -7,7 +7,6 @@ from Controlador import clientes
 from FuncionesEspeciales import F_claves
 from FuncionesEspeciales import F_whatsapp
 
-
 # xhost +local:
 
 class cliente:
@@ -19,11 +18,11 @@ class cliente:
         try: self.ventana.state('zoomed')
         except: self.ventana.attributes('-zoomed', True)
 
-        self.ventana.grid_columnconfigure(0, weight=0) # Menú (no se estira)
-        self.ventana.grid_columnconfigure(1, weight=1) # Contenido (sí se estira)
-        self.ventana.grid_rowconfigure(0, weight=1)    # Que ocupe todo el alto
+        self.ventana.grid_columnconfigure(0, weight=0)
+        self.ventana.grid_columnconfigure(1, weight=1)
+        self.ventana.grid_rowconfigure(0, weight=1)
 
-        self.frame_contenido = ctk.CTkFrame(self.ventana, fg_color="#D1D1D1", corner_radius=0)
+        self.frame_contenido = ctk.CTkScrollableFrame( self.ventana, fg_color="#D1D1D1", corner_radius=0, orientation="vertical")
         self.frame_contenido.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
 
@@ -49,7 +48,7 @@ class cliente:
 
 
 
-        self.btn_buscar_clave = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E",
+        self.btn_buscar_clave = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
                                              command=lambda: self.buscar_clave())
         self.btn_buscar_clave.grid(row=0, column=2, padx=5, pady=5)
 
@@ -59,11 +58,11 @@ class cliente:
         self.ent_buscar_nombre = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: Juan", width=250)
         self.ent_buscar_nombre.grid(row=0, column=4, padx=5, pady=5)
 
-        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E",
+        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
                                               command=lambda: self.BuscarPorNombre())
         self.btn_buscar_nombre.grid(row=0, column=5, padx=5, pady=5)
 
-        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Todos", width=100, fg_color="#3E3E3E",
+        self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Todos", width=100, fg_color="#FF5733",
                                               command=lambda: self.mostrarTalbe())
         self.btn_buscar_nombre.grid(row=0, column=6, padx=5, pady=5)
 
@@ -78,12 +77,13 @@ class cliente:
         self.clientes.heading("GMAIL", text="GMAIL")
         self.clientes.heading("TELEFONO", text="TELEFONO")
 
-        self.clientes.column("CLAVE", width=120, stretch=True)
-        self.clientes.column("NOMBRE", width=120, stretch=True)
-        self.clientes.column("APELLIDO", width=120, stretch=True)
-        self.clientes.column("DIRECCION", width=120, stretch=True)
-        self.clientes.column("GMAIL", width=120, stretch=True)
-        self.clientes.column("TELEFONO", width=120, stretch=True)
+        self.clientes.column("CLAVE", width=120, stretch=True, anchor="center")
+        self.clientes.column("NOMBRE", width=120, stretch=True, anchor="center")
+        self.clientes.column("APELLIDO", width=120, stretch=True, anchor="center")
+        self.clientes.column("DIRECCION", width=120, stretch=True, anchor="center")
+        self.clientes.column("GMAIL", width=120, stretch=True, anchor="center")
+        self.clientes.column("TELEFONO", width=120, stretch=True, anchor="center")
+
         style = ttk.Style()
         style.theme_use("default")
         style.configure("Treeview",
@@ -101,25 +101,27 @@ class cliente:
         self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.frame_acciones.pack(pady=20, fill="x", padx=20)
 
-        self.btnEditar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="EDITAR", width=150,
+        self.btnEditar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="EDITAR", width=150,
             command=lambda: self.edita())
         self.btnEditar.grid(row=0, column=0, padx=10, pady=10)
 
-        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150,
+        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="ELIMINAR", width=150,
             command=lambda: self.eliminar_UI())
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
-        self.btn_Agregar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="INSERTAR", width=150,
+        self.btn_Agregar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="INSERTAR", width=150,
             command=lambda: self.insertar())
         self.btn_Agregar.grid(row=2, column=0, padx=10, pady=10)
 
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ENVIAR CORREO", width=150,
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="ENVIAR CORREO", width=150,
             command=lambda: self.EnbiarCorreo())
         self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
 
-        self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="MENSAJE AL GRUPO DE TELEGRAM", width=150,
+        self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="MENSAJE AL GRUPO DE TELEGRAM", width=150,
             command=lambda: self.embiarTelegram())
         self.btn_oferta.grid(row=1, column=1, padx=10, pady=10)
+
+
 
         self.mostrarTalbe()
         self.ventana.mainloop()
@@ -185,7 +187,7 @@ class cliente:
         self.user_tabla.heading("CORREO", text="CORREO")
         self.user_tabla.heading("NUMERO", text="NUMERO")
 
-        self.user_tabla.column("NOMBRE", width=100)
+        self.user_tabla.column("NOMBRE", width=100, anchor="center")
         self.user_tabla.column("CORREO", width=80, anchor="center")
         self.user_tabla.column("NUMERO",  width=80, anchor="center")
 
@@ -212,8 +214,9 @@ class cliente:
             azunto = "Trata de algun tema"
             F_embiarCorreo.embiarCorreo(correo, contenido, azunto)
             messagebox.showinfo("Envio", "se embio el correo")
+            ventana_correo.destroy()
 
-        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR CORREO", fg_color="#3E3E3E",
+        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR CORREO", fg_color="#FF5733",
                 width=200, height=70, font=("Arial", 15), command=lambda: enviar())
         emviar.pack(padx=10, pady=5)
 
@@ -229,7 +232,7 @@ class cliente:
 
 
 
-        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR MENSAJE", fg_color="#3E3E3E",
+        emviar = ctk.CTkButton(ventana_correo, text="EMVIAR MENSAJE", fg_color="#FF5733",
                 width=200, height=70, font=("Arial", 15), command=lambda: enviar_texto())
         emviar.pack(padx=10, pady=5)
 
@@ -259,7 +262,7 @@ class cliente:
 
     def embiarTelegram(self):
         ventana_telegram = ctk.CTkToplevel()
-        ventana_telegram.geometry("1200x1000")
+        ventana_telegram.geometry("1200x500")
         ventana_telegram.title("APARTADO DEL CLIENTE")
         ventana_telegram.configure(fg_color="#E5E5E5")
 
@@ -272,7 +275,7 @@ class cliente:
             contenido = mensaje.get("0.0", "end")
             F_enbiarTelegram.Telegram_mensaje(contenido)
 
-        emviar = ctk.CTkButton(ventana_telegram, text="EMVIAR", fg_color="#3E3E3E",
+        emviar = ctk.CTkButton(ventana_telegram, text="EMVIAR", fg_color="#FF5733",
                 width=200, height=70, font=("Arial", 15), command=lambda: enviar())
         emviar.pack(padx=10, pady=5)
 
@@ -287,17 +290,17 @@ class cliente:
         ventana_correo = ctk.CTkToplevel()
         ventana_correo.geometry("1800x1200")
         ventana_correo.title("APARTADO DE CLIENTES")
-        ventana_correo.configure(fg_color=COLOR_FONDO_BLANCO)
+        ventana_correo.configure(fg_color="#D1D1D1")
 
         ventana_correo.grid_columnconfigure(0, weight=1)
         ventana_correo.grid_columnconfigure(1, weight=2)
         ventana_correo.grid_rowconfigure(0, weight=1)
 
 
-        frame_izquierdo = ctk.CTkFrame(ventana_correo, fg_color=COLOR_PRIMARIO, corner_radius=15)
+        frame_izquierdo = ctk.CTkFrame(ventana_correo, fg_color="#E5E5E5", corner_radius=15)
         frame_izquierdo.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
-        ctk.CTkLabel(frame_izquierdo, text="DATOS DEL CLIENTE", text_color=COLOR_TEXTO_NEGRO, font=("Arial", 16, "bold")).pack(pady=20)
+        ctk.CTkLabel(frame_izquierdo, text="DATOS DEL CLIENTE", text_color="#1A1A1A", font=("Arial", 16, "bold")).pack(pady=20)
 
         self.nombre_entry = ctk.CTkEntry(frame_izquierdo, placeholder_text="NOMBRE", width=250, height=45, fg_color="#FFFFFF", text_color=COLOR_TEXTO_NEGRO)
         self.nombre_entry.pack(pady=10, padx=20)
@@ -322,7 +325,12 @@ class cliente:
                 telefono = int(self.ent_telefono.get())
                 email = self.ent_email.get()
                 direccion = self.ent_direccion.get()
-                print("Se va")
+                if nombre == "" or apellido == "" or email == ""  or direccion == "":
+                    messagebox.showinfo("Error", "Error en los datos")
+
+                if len(str(telefono)) != 10:
+                    messagebox.showinfo("Error", "Error en los datos")
+
                 clientes.update(self.clave_cliente, direccion, email, telefono, nombre, apellido)
 
                 self.mostrarTalbe()
@@ -330,15 +338,15 @@ class cliente:
                 ventana_correo.destroy()
             except:
                 from tkinter import messagebox
-                messagebox.showinfo("Fallo", "No se puede actualizar")
+                messagebox.showinfo("Fallo", "No se puede actualizar. Revise los datos")
 
-        self.btn_accion = ctk.CTkButton(frame_izquierdo, text="ACTUALIZAR", fg_color=COLOR_SECUNDARIO, hover_color=COLOR_TERCIARIO,
+        self.btn_accion = ctk.CTkButton(frame_izquierdo, text="ACTUALIZAR", fg_color="#FF5733",
             command=lambda: editar())
         self.btn_accion.pack(pady=30)
 
 
 
-        frame_derecho = ctk.CTkFrame(ventana_correo, fg_color=COLOR_FONDO_BLANCO)
+        frame_derecho = ctk.CTkFrame(ventana_correo, fg_color="#D1D1D1")
         frame_derecho.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
 
         style = ttk.Style()
@@ -366,12 +374,13 @@ class cliente:
         self.editar_talbla.heading("TELEFONO", text="TELEFONO")
         self.editar_talbla.heading("EMAIL", text="EMAL")
         self.editar_talbla.heading("DIRECCION", text="DIRECCIOPM")
+
         self.editar_talbla.column("CLAVE", width=100, anchor="center")
-        self.editar_talbla.column("NOMBRE", width=150, anchor="w")
-        self.editar_talbla.column("APELLIDOS", width=150, anchor="w")
-        self.editar_talbla.column("TELEFONO", width=150, anchor="w")
-        self.editar_talbla.column("EMAIL", width=150, anchor="w")
-        self.editar_talbla.column("DIRECCION", width=150, anchor="w")
+        self.editar_talbla.column("NOMBRE", width=150, anchor="center")
+        self.editar_talbla.column("APELLIDOS", width=150, anchor="center")
+        self.editar_talbla.column("TELEFONO", width=150, anchor="center"")
+        self.editar_talbla.column("EMAIL", width=150, anchor="center")
+        self.editar_talbla.column("DIRECCION", width=150, anchor="center")
 
         self.editar_talbla.pack(fill="both", expand=True)
 
@@ -414,20 +423,20 @@ class cliente:
         COLOR_SECUNDARIO = "#1A1A1A"
         COLOR_TERCIARIO = "#FFB0CC"
         COLOR_COMPLEMENTARIO = "#8DCCE3"
-        COLOR_FONDO_BLANCO = "#F2F2F2"
+        COLOR_FONDO_BLANCO = "#1A1A1A"
         COLOR_TEXTO_NEGRO = "#1A1A1A"
 
         ventana_correo = ctk.CTkToplevel()
         ventana_correo.geometry("800x600")
         ventana_correo.title("AGREGAR CLIENTES")
-        ventana_correo.configure(fg_color=COLOR_FONDO_BLANCO)
+        ventana_correo.configure(fg_color="#1A1A1A")
 
         ventana_correo.grid_columnconfigure(0, weight=1)
         # ventana_correo.grid_columnconfigure(1, weight=1)
         ventana_correo.grid_rowconfigure(0, weight=1)
 
 
-        frame_izquierdo = ctk.CTkFrame(ventana_correo, fg_color=COLOR_PRIMARIO, corner_radius=15)
+        frame_izquierdo = ctk.CTkFrame(ventana_correo, fg_color="#E5E5E5", corner_radius=15)
         frame_izquierdo.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
         ctk.CTkLabel(frame_izquierdo, text="DATOS DEL CLIENTE", text_color=COLOR_TEXTO_NEGRO, font=("Arial", 16, "bold")).pack(pady=20)
@@ -449,12 +458,17 @@ class cliente:
 
         def agregar_valores_a_insertar():
             try:
-                nombre = nombre_entry.get()
-                apellido = apellido_entry.get()
+                nombre = nombre_entry.get().strip()
+                apellido = apellido_entry.get().strip()
                 telefono = int(ent_telefono.get())
-                email = ent_email.get()
-                direccion = ent_direccion.get()
-                print("Se va")
+                email = ent_email.get().strip()
+                direccion = ent_direccion.get().strip()
+                if nombre == "" or apellido == "" or email == ""  or direccion == "":
+                    messagebox.showinfo("Error", "Error en los datos")
+
+                if len(str(telefono)) != 10:
+                    messagebox.showinfo("Error", "Error en los datos")
+
                 clave_cliente = F_claves.Generar_clave_cliente()
                 try:
                     clientes.insert(clave_cliente, direccion, email, telefono, nombre, apellido)
@@ -469,14 +483,14 @@ class cliente:
                 from tkinter import messagebox
                 messagebox.showinfo("Fallo", "Error en los datos")
 
-        self.btn_accion = ctk.CTkButton(frame_izquierdo, text="INSERTAR", fg_color=COLOR_SECUNDARIO, hover_color=COLOR_TERCIARIO,
+        self.btn_accion = ctk.CTkButton(frame_izquierdo, text="INSERTAR", fg_color="#FF5733",
             command=lambda: agregar_valores_a_insertar())
         self.btn_accion.pack(pady=30)
 
     def eliminar_UI(self):
         COLOR_ROSA = "#F8C8DC"
         COLOR_NEGRO = "#1A1A1A"
-        COLOR_FONDO = "#F2F2F2"
+        COLOR_FONDO = "#D1D1D1"
         COLOR_BLANCO = "#FFFFFF"
 
         try:
@@ -512,14 +526,14 @@ class cliente:
         btn_aceptar = ctk.CTkButton(frame, text="ACEPTAR",
                                         fg_color=COLOR_NEGRO,
                                         text_color=COLOR_BLANCO,
-                                        hover_color="#333333",
+                                        hover_color="#FF5733",
                                         command=lambda: [eliminar_cliente(), ventana_mini.destroy()])
         btn_aceptar.pack(pady=10)
 
         btn_aceptar = ctk.CTkButton(frame, text="CANSELAR",
                                         fg_color=COLOR_NEGRO,
                                         text_color=COLOR_BLANCO,
-                                        hover_color="#333333",
+                                        hover_color="#FF5733",
                                         command=lambda: [ventana_mini.destroy()])
         btn_aceptar.pack(pady=10)
 

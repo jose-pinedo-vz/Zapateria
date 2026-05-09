@@ -115,7 +115,7 @@ create table Inventario(
     Color char(100), 
     RutaImagen CHAR(300), 
 
-
+<<<<<<< HEAD
     PRIMARY key(Clave, talla, color), 
     foreign key (Clave) references Productos(Clave)
 )
@@ -138,6 +138,27 @@ CREATE TABLE Productos (
     Categoria VARCHAR(100)
 );
  
+-- create table seccion
+-- (id_seccion INT PRIMARY KEY, 
+-- seccion char(10))  
+
+ 
+-- create table categoria
+-- (id_categoria INT PRIMARY KEY, 
+-- categoria CHAR(10)) 
+
+
+-- CREATE TABLE modelo
+-- (clave INT PRIMARY KEY, 
+-- id_marca INT, 
+-- modelo CHAR(20), 
+
+-- FOREIGN KEY (id_marca) REFERENCES marca(id_marca)) 
+
+
+-- CREATE TABLE marca
+-- (id_marca INT PRIMARY KEY, 
+-- marca char(15)) 
  
 
 CREATE TABLE Clientes (

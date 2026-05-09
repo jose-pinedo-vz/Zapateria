@@ -1,20 +1,13 @@
 import customtkinter as ctk
 from tkinter import ttk
-
 from tkinter import ttk, filedialog
 import os
-
-
 from FuncionesEspeciales import F_claves
 from Controlador import productos
 from tkinter import messagebox
-
 from Controlador import inventario_SQL
-
 from PIL import Image, ImageTk
 import os
-
-
 import os
 import shutil
 
@@ -57,7 +50,12 @@ class inventario:
         )
         self.btn_listaInventario.grid(row=1, column=0, padx=20, pady=20)
 
-        self.frame_contenido = ctk.CTkFrame(self.ventana, fg_color="#D1D1D1", corner_radius=0)
+        self.frame_contenido = ctk.CTkScrollableFrame(
+                self.ventana,
+                fg_color="#D1D1D1",
+                corner_radius=0,
+                orientation="vertical"
+        )
         self.frame_contenido.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
 
         self.frameCentral()
@@ -86,17 +84,39 @@ class inventario:
         self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
         self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
 
-        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E")
+        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733")
         self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)
+
+        self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
+        self.frame_acciones.pack(pady=20, fill="x", padx=20)
+
+        self.btnEditar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="EDITAR", width=150,
+            command=lambda: self.editar_inventario())
+        self.btnEditar.grid(row=0, column=0, padx=10, pady=10)
+
+        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="ELIMINAR", width=150,
+             command=lambda: self.eliminar_inventario())
+        self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
+
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="SURTIR", width=150,
+                                     command=lambda: self.agregarInventario())
+        self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
+
+        self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="MOVE A OFERTA", width=150)
+        self.btn_oferta.grid(row=1, column=1, padx=10, pady=10)
+
+        self.btn_PROVEDORES = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="CORREO A PROVEEDORES", width=150,
+             command=lambda: self.EnbiarCorreo())
+        self.btn_PROVEDORES.grid(row=0, column=2, padx=10, pady=10)
 
         colupnas = ("CLAVE", "CANTIDAD DEL PRODUCTO", "TALLA", "FECHA DE INGRESO", "PRECIO", "COLOR")
 
-        self.frame_tabla_fijo = ctk.CTkFrame(self.frame_contenido, width=800, height=450)
-        self.frame_tabla_fijo.pack_propagate(False) # ¡VITAL! Evita que el frame cambie de tamaño
-        self.frame_tabla_fijo.pack(pady=20)
+        # self.frame_tabla_fijo = ctk.CTkFrame(self.frame_contenido, width=800, height=450)
+        # self.frame_tabla_fijo.pack_propagate(False) # ¡VITAL! Evita que el frame cambie de tamaño
+        # self.frame_tabla_fijo.pack(pady=20)
 
 
-        self.tablaProductos = ttk.Treeview(self.frame_tabla_fijo, columns=colupnas, show="tree headings")
+        self.tablaProductos = ttk.Treeview(self.frame_contenido, columns=colupnas, show="tree headings")
 
         for col in colupnas:
             self.tablaProductos.heading(col, text=col)
@@ -105,13 +125,13 @@ class inventario:
         self.tablaProductos.heading("#0", text="IMAGEN")
 
         # La suma de estos 'width' define el ancho total de la tabla
-        self.tablaProductos.column("#0", width=150, stretch=False)
-        self.tablaProductos.column("CLAVE", width=100, stretch=True)
-        self.tablaProductos.column("CANTIDAD DEL PRODUCTO", width=200, stretch=True)
-        self.tablaProductos.column("TALLA", width=100, stretch=True)
-        self.tablaProductos.column("FECHA DE INGRESO", width=200, stretch=True)
-        self.tablaProductos.column("PRECIO", width=100, stretch=True)
-        self.tablaProductos.column("COLOR", width=150, stretch=True)
+        self.tablaProductos.column("#0", width=150, stretch=False, anchor="center")
+        self.tablaProductos.column("CLAVE", width=100, stretch=True, anchor="center")
+        self.tablaProductos.column("CANTIDAD DEL PRODUCTO", width=200, stretch=True, anchor="center")
+        self.tablaProductos.column("TALLA", width=100, stretch=True, anchor="center")
+        self.tablaProductos.column("FECHA DE INGRESO", width=200, stretch=True, anchor="center")
+        self.tablaProductos.column("PRECIO", width=100, stretch=True, anchor="center")
+        self.tablaProductos.column("COLOR", width=150, stretch=True, anchor="center")
 
 
         style = ttk.Style()
@@ -129,30 +149,11 @@ class inventario:
         self.tablaProductos.bind("<<TreeviewSelect>>", self.eliminar_inve)
         # scrrol barr pos si algun dia se nesesita
 
-        self.scrollbar = ttk.Scrollbar(self.frame_tabla_fijo, orient="vertical", command=self.tablaProductos.yview)
-        self.tablaProductos.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side="right", fill="y")
+        # self.scrollbar = ttk.Scrollbar(self.frame_tabla_fijo, orient="vertical", command=self.tablaProductos.yview)
+        # self.tablaProductos.configure(yscrollcommand=self.scrollbar.set)
+        # self.scrollbar.pack(side="right", fill="y")
 
-        self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
-        self.frame_acciones.pack(pady=20, fill="x", padx=20)
 
-        self.btnEditar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="EDITAR", width=150)
-        self.btnEditar.grid(row=0, column=0, padx=10, pady=10)
-
-        self.btn_eliminar = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="ELIMINAR", width=150,
-            command=lambda: self.eliminar_inventario())
-        self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
-
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="SURTIR", width=150,
-                                    command=lambda: self.agregarInventario())
-        self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
-
-        self.btn_oferta = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="MOVE A OFERTA", width=150)
-        self.btn_oferta.grid(row=1, column=1, padx=10, pady=10)
-
-        self.btn_PROVEDORES = ctk.CTkButton(self.frame_acciones,fg_color="#3E3E3E", text="CORREO A PROVEEDORES", width=150,
-            command=lambda: self.EnbiarCorreo())
-        self.btn_PROVEDORES.grid(row=0, column=2, padx=10, pady=10)
 
         self.llenarTalbaProd()
 
@@ -183,17 +184,11 @@ class inventario:
 
     def cargar_y_redimensionar(self, ruta):
         try:
-            # Limpiamos espacios en blanco que SQL Server CHAR(300) suele agregar
             ruta = ruta.strip()
-
-            # print(f"DEBUG: Intentando cargar -> '{ruta}'")
-
             if ruta == "SIN IMAGEN" or not os.path.exists(ruta):
-                # print(f"AVISO: La ruta no existe o es nula: {ruta}")
-                img = Image.new('RGB', (90, 90), color=(200, 200, 200)) # Gris
+                img = Image.new('RGB', (90, 90), color=(200, 200, 200))
             else:
                 img = Image.open(ruta)
-                # print(f"ÉXITO: Imagen {ruta} cargada correctamente")
 
             img = img.resize((50, 50), Image.Resampling.LANCZOS)
             return ImageTk.PhotoImage(img)
@@ -221,7 +216,7 @@ class inventario:
         self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
         self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
 
-        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#3E3E3E")
+        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733")
         self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)
         colupnas = ("CLAVE", "MODELO", "MARCA", "SECCION", "CATEGORIA")
         self.tablaProductos = ttk.Treeview(self.frame_contenido, columns=colupnas, show="headings")
@@ -516,8 +511,8 @@ class inventario:
 
         provedores_tabla.heading("NOMBRE", text="PROVEEDOR")
         provedores_tabla.heading("CORREO", text="CORREO ELECTRÓNICO")
-        provedores_tabla.column("NOMBRE", width=200)
-        provedores_tabla.column("CORREO", width=300)
+        provedores_tabla.column("NOMBRE", width=200, anchor="center")
+        provedores_tabla.column("CORREO", width=300, anchor="center")
 
         # Datos de ejemplo (puedes cambiarlos por tus proveedores reales)
         proveedores = [
@@ -653,7 +648,7 @@ class inventario:
 
         ventana_inv = ctk.CTkToplevel()
         ventana_inv.geometry("1600x800")
-        ventana_inv.title("CONTROL DE INVENTARIO - ZAPATERIA")
+        ventana_inv.title("SURTIR")
         ventana_inv.configure(fg_color=COLOR_FONDO)
 
         # Configuración de proporciones (1:2)
@@ -777,8 +772,210 @@ class inventario:
 
 
 
-    def editarinventario(self):
-        pass
+    def editar_inventario(self):
+        COLOR_FONDO = "#1A1A1A"
+        COLOR_ENTRADAS = "#2B2B2B"
+        COLOR_BOTON = "#FF5733"
+
+        ventana_inv = ctk.CTkToplevel()
+        ventana_inv.geometry("1600x800")
+        ventana_inv.title("EDITAR INVENTARIO")
+        ventana_inv.configure(fg_color=COLOR_FONDO)
+
+        # Configuración de proporciones (1:2)
+        ventana_inv.grid_columnconfigure(0, weight=1) # Panel Izquierdo (Captura)
+        ventana_inv.grid_columnconfigure(1, weight=3) # Panel Derecho (Tabla)
+        ventana_inv.grid_rowconfigure(0, weight=1)
+
+        # --- LADO IZQUIERDO: FORMULARIO ---
+        frame_izq = ctk.CTkFrame(ventana_inv, fg_color=COLOR_FONDO, corner_radius=0)
+        frame_izq.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+
+        ctk.CTkLabel(frame_izq, text="DATOS DE ENTRADA", font=("Arial", 20, "bold")).pack(pady=(0, 20))
+
+        self.ent_clave = ctk.CTkEntry(frame_izq, placeholder_text="Clave", width=250, height=45)
+        self.ent_clave.pack(pady=10)
+
+        self.ent_clave.configure(state="disabled")
+
+        self.ent_cantidad = ctk.CTkEntry(frame_izq, placeholder_text="Cantidad de Producto", width=250, height=45)
+        self.ent_cantidad.pack(pady=10)
+
+        self.ent_talla = ctk.CTkEntry(frame_izq, placeholder_text="Talla", width=250, height=45)
+        self.ent_talla.pack(pady=10)
+
+        self.ent_precio = ctk.CTkEntry(frame_izq, placeholder_text="Precio $", width=250, height=45)
+        self.ent_precio.pack(pady=10)
+
+        self.ent_color = ctk.CTkEntry(frame_izq, placeholder_text="Color", width=250, height=45)
+        self.ent_color.pack(pady=10)
+
+        frame_img = ctk.CTkFrame(frame_izq, fg_color="transparent")
+        frame_img.pack(pady=20)
+
+        # self.ent_ruta_img = ctk.CTkEntry(frame_img, placeholder_text="Ruta de imagen...", width=160, height=40)
+        # self.ent_ruta_img.pack(side="left", padx=5)
+
+        # def seleccionar_archivo():
+        #     ruta = filedialog.askopenfilename(initialdir="/", title="Imagen",
+        #                                      filetypes=(("Archivos de imagen", "*.jpg *.png *.jpeg"), ("Todos", "*.*")))
+        #     self.ent_ruta_img.delete(0, 'end')
+        #     self.ent_ruta_img.insert(0, ruta)
+
+        # btn_explorar = ctk.CTkButton(frame_img, text="...", width=40, height=40, command=seleccionar_archivo)
+        # btn_explorar.pack(side="left")
+
+        def recupareraDatos():
+            CARPETA_DESTINO = "imagenes_productos"
+            if not os.path.exists(CARPETA_DESTINO):
+                os.mkedir(CARPETA_DESTINO)\
+
+            ruta = self.ent_ruta_img.get()
+            if ruta.strip() == ""  or not os.path.exists(ruta):
+                ruta = "SIN IMAGEN"
+            else:
+                nombre_arhivo = os.path.basename(ruta)
+                ruta_destino = os.path.join(CARPETA_DESTINO, nombre_arhivo)
+                shutil.copy2(ruta, ruta_destino)
+                ruta_final = ruta_destino
+
+            try:
+                Clave = self.ent_clave.get()
+                CantidadPorducto = int(self.ent_cantidad.get())
+                Talla = int(self.ent_talla.get())
+                Precio = float(self.ent_precio.get())
+                color = self.ent_color.get()
+                ventana_inv.destroy()
+            except:
+                from tkinter import messagebox
+                messagebox.showinfo("ERORR", "POSIBLE ERROR EN LOS DATOS")
+
+            inventario_SQL.insert(Clave, CantidadPorducto, Talla, Precio, color, ruta_final)
+
+        self.btn_surtir = ctk.CTkButton(frame_izq, text="SURTIR PRODUCTO", fg_color=COLOR_BOTON,
+                                       height=60, font=("Arial", 16, "bold"),
+                                       command=lambda: recupareraDatos())
+        self.btn_surtir.pack(side="bottom", pady=20, fill="x")
+
+
+        # derecha
+        frame_der = ctk.CTkFrame(ventana_inv, fg_color="#FFFFFF", corner_radius=15)
+        frame_der.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
+
+        colupnas = ("CLAVE", "CANTIDAD DEL PRODUCTO", "TALLA", "FECHA DE INGRESO", "PRECIO", "COLOR")
+
+         # self.frame_tabla_fijo = ctk.CTkFrame(self.frame_contenido, width=800, height=450)
+         # self.frame_tabla_fijo.pack_propagate(False) # ¡VITAL! Evita que el frame cambie de tamaño
+         # self.frame_tabla_fijo.pack(pady=20)
+
+
+        self.tablaProductos_editar_inventrio = ttk.Treeview(frame_der, columns=colupnas, show="tree headings")
+
+        for col in colupnas:
+            self.tablaProductos_editar_inventrio.heading(col, text=col)
+
+        self.tablaProductos_editar_inventrio.column("#0", width=100, anchor="center")
+        self.tablaProductos_editar_inventrio.heading("#0", text="IMAGEN")
+
+        self.tablaProductos_editar_inventrio.column("#0", width=150, stretch=False, anchor="center")
+        self.tablaProductos_editar_inventrio.column("CLAVE", width=100, stretch=True, anchor="center")
+        self.tablaProductos_editar_inventrio.column("CANTIDAD DEL PRODUCTO", width=200, stretch=True, anchor="center")
+        self.tablaProductos_editar_inventrio.column("TALLA", width=100, stretch=True, anchor="center")
+        self.tablaProductos_editar_inventrio.column("FECHA DE INGRESO", width=200, stretch=True, anchor="center")
+        self.tablaProductos_editar_inventrio.column("PRECIO", width=100, stretch=True, anchor="center")
+        self.tablaProductos_editar_inventrio.column("COLOR", width=150, stretch=True, anchor="center")
+
+
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Treeview",
+                         background="#F2F2F2",
+                         foreground="black",
+                         rowheight=100,
+                         fieldbackground="#F2F2F2")
+
+        style.map("Treeview", background=[('selected', '#3E3E3E')])
+
+        self.tablaProductos_editar_inventrio.pack(side="top", fill="both", expand=True)
+
+        self.tablaProductos_editar_inventrio.bind("<<TreeviewSelect>>", self.Rescatar_datos_editar_inventario)
+
+
+        self.Talba_editar_inventario()
+
+
+    def Talba_editar_inventario(self):
+        self.imagenes_renderizadas.clear()
+
+        for item in self.tablaProductos_editar_inventrio.get_children():
+            self.tablaProductos_editar_inventrio.delete(item)
+
+        datos = inventario_SQL.consultar()
+
+        if datos:
+            for fila in datos:
+                ruta_img = fila[0]
+                resto_datos = fila[1:]
+
+                foto_final = self.cargar_y_redimensionar2(ruta_img)
+                self.imagenes_renderizadas.append(foto_final)
+
+                self.tablaProductos_editar_inventrio.insert(
+                    "",
+                    "end",
+                    image=foto_final,
+                    values=tuple(str(item).strip() for item in resto_datos)
+                )
+        # print(self.imagenes_renderizadas)
+
+    def cargar_y_redimensionar2(self, ruta):
+        try:
+            ruta = ruta.strip()
+            if ruta == "SIN IMAGEN" or not os.path.exists(ruta):
+                img = Image.new('RGB', (90, 90), color=(200, 200, 200))
+            else:
+                img = Image.open(ruta)
+
+            img = img.resize((50, 50), Image.Resampling.LANCZOS)
+            return ImageTk.PhotoImage(img)
+
+        except Exception as e:
+            print(f"ERROR CRÍTICO cargando imagen {ruta}: {e}")
+            return ImageTk.PhotoImage(Image.new('RGB', (50, 50), color=(255, 0, 0)))
+
+    def Rescatar_datos_editar_inventario(self, event):
+        print("Llega a la tabla")
+        seleccion = self.tablaProductos_editar_inventrio.selection()
+        if seleccion:
+            item = self.tablaProductos_editar_inventrio.item(seleccion)
+            valores = item['values']
+            self.clave_E_I = valores[0]
+            self.cantidad_E_I = valores[1]
+            self.talla_E_I = valores[2]
+            self.precio_E_I = valores[4]
+            self.color_E_I = valores[5]
+
+
+            self.ent_clave.configure(state="normal")
+            self.ent_clave.delete(0, "end")
+            self.ent_clave.insert(0, self.clave_E_I)
+            self.ent_clave.configure(state="disabled")
+
+            self.ent_cantidad.delete(0, "end")
+            self.ent_cantidad.insert(0, self.cantidad_E_I)
+
+
+            self.ent_talla.delete(0, "end")
+            self.ent_talla.insert(0, self.talla_E_I)
+
+            self.ent_precio.delete(0, "end")
+            self.ent_precio.insert(0, self.precio_E_I)
+            self.ent_color.delete(0, "end")
+            self.ent_color.insert(0, self.color_E_I)
+
+
+
+
     def eliminar_inventario(self):
         COLOR_ROSA = "#F8C8DC"
         COLOR_NEGRO = "#1A1A1A"
