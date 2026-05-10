@@ -283,7 +283,8 @@ class inventario:
     def AgregarProducto(self):
         self.create_producto = ctk.CTkToplevel()
         self.create_producto.geometry("500x800")
-        self.create_producto.title("DAR DE ALTA UN NUEVO PRODICTO")
+        self.create_producto.title("DAR DE ALTA UN NUEVO PRODUCTO")
+        self.create_producto.grab_set()
         self.create_producto.configure(fg_color="#E5E5E5")
 
         self.en_modelo = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))

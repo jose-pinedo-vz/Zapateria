@@ -13,16 +13,46 @@ class Ventana_GUI():
         self.COLOR_FONDO_BLANCO= "#F2F2F2"
         self.COLOR_TEXTO_NEGRO = "#1A1A1A"
 
+        """A quien le toque: esto es para tomar al responsable o quien entro al sistema"""
+        clave="E001"
+        import pyodbc
+        conexion=(
+        "Driver={SQL Server};"
+        "Server=localhost;"
+        "Database=Zapateria;"
+        "Trusted_Connection=yes;")
+        try:
+            conexion=pyodbc.connect(conexion)
+            print("Conexión exitosa")
+        except Exception as e:
+            print(f"Error al conectar: {e}")
+
+        cursor=conexion.cursor()
+        cursor.execute("""
+            SELECT ClaveAcceso,Nombre,ApellidoP
+            FROM Personal
+            WHERE ClaveAcceso=?
+            """,(clave,))
+        
+        fila=cursor.fetchone()
+        self.Responsable_turno=(fila.Nombre+" "+fila.ApellidoP)
+        cursor.close()
+        conexion.close()
+        print("Responsable: ",self.Responsable_turno)
+        
+
         self.Ventana=ctk.CTk()
         self.Ventana.geometry("1000x700")
         self.Ventana.title("Menu Principal")
         self.Ventana.configure(fg_color=self.COLOR_SECUNDARIO)
+        self.Ventana.after(200,lambda:self.Ventana.state('zoomed'))
+
 
         self.Frame_principal=ctk.CTkFrame(self.Ventana,
                                           fg_color=self.COLOR_FONDO_BLANCO,
-                                          height=500,
-                                          width=900)
-        self.Frame_principal.place(relx=0.5, rely=0.6, anchor=ctk.CENTER)
+                                          
+                                          )
+        self.Frame_principal.place(relx=0.5, rely=0.6, relheight=.75,relwidth=.9,anchor=ctk.CENTER)
 
         btn_Finanzas=ctk.CTkButton(self.Ventana,text="Area financiera",
                                    fg_color=self.COLOR_COMPLEMENTARIO,
@@ -72,12 +102,12 @@ class Ventana_GUI():
     def Llama_Modulo_Ventas(self):
         self.BorraFrame()
         Ventas=ModuloVentas()
-        Ventas.Iniciar(self.Frame_principal)
+        Ventas.Iniciar(self.Frame_principal,self.Responsable_turno)
 
     def Llama_Modulo_Finanzas(self):
         self.BorraFrame()
         Finanzas=ModuloFinanzas()
-        Finanzas.Iniciar(self.Frame_principal)
+        Finanzas.Iniciar(self.Frame_principal,self.Responsable_turno)
     
 obj=Ventana_GUI()
 obj.Iniciar()

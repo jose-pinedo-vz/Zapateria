@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 
 class ModuloFinanzas():
-    def Iniciar(self,Frame):
+    def Iniciar(self,Frame,Responsable):
 
         self.Frame_principal=Frame
 

@@ -378,7 +378,7 @@ class cliente:
         self.editar_talbla.column("CLAVE", width=100, anchor="center")
         self.editar_talbla.column("NOMBRE", width=150, anchor="center")
         self.editar_talbla.column("APELLIDOS", width=150, anchor="center")
-        self.editar_talbla.column("TELEFONO", width=150, anchor="center"")
+        self.editar_talbla.column("TELEFONO", width=150, anchor="center")
         self.editar_talbla.column("EMAIL", width=150, anchor="center")
         self.editar_talbla.column("DIRECCION", width=150, anchor="center")
 

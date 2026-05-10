@@ -7,10 +7,12 @@ create table Sucursal
 Ciudad_Sucursal varchar(15));
 
 create table Cliente
-(ClaveCuenta varchar(5)primary key,
+(ClaveCuenta varchar(5) primary key,
 NombreCliente varchar(10),
 ApellidoM varchar(15),
 ApellidoP varchar(15),
+Telefono varchar(15),
+Email varchar(50),    
 Activo bit default 1);
 
 create table Cuenta
@@ -79,3 +81,6 @@ GO
 UPDATE Cliente SET Activo = 1;
 GO
 
+ALTER TABLE Cliente ADD Telefono VARCHAR(15);
+ALTER TABLE Cliente ADD Email VARCHAR(50);
+GO
