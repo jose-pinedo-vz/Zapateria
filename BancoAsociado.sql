@@ -6,23 +6,22 @@ create table Sucursal
 (Nombre_Sucursal varchar(20)primary key,
 Ciudad_Sucursal varchar(15));
 
+create table Cliente
+(ClaveCuenta varchar(5) primary key,
+NombreCliente varchar(10),
+ApellidoM varchar(15),
+ApellidoP varchar(15),
+Telefono varchar(15),
+Email varchar(50),    
+Activo bit default 1);
+
 create table Cuenta
 (ClaveCuenta varchar(5)primary key,
 Saldo money,
 Sucursal varchar(20),
-PIN varchar(4) NOT NULL,
+PIN varchar(4) not null,
 foreign key(Sucursal) references Sucursal(Nombre_Sucursal),
 foreign key(ClaveCuenta) references Cliente(ClaveCuenta));
-
-create table Cliente
-(ClaveCuenta varchar(5)primary key,
-NombreCliente varchar(10),
-ApellidoM varchar(15),
-ApeelidoP varchar(15));
-
-
-DELETE FROM Cuenta;
-ALTER TABLE Cuenta ADD PIN varchar(4) NOT NULL;
 
 create table Transaccion
 (ClaveDeposito varchar(10)primary key,
@@ -38,11 +37,16 @@ Monto money,
 foreign key(ClaveDeposito) references Transaccion(ClaveDeposito));
 
 create table Ubicacion
-(Nombre varchar(10)primary key,
-Ciudad varchar(15),
-Clave varchar(5),
+(Ciudad varchar(15),
+Clave varchar(5) primary key,
 foreign key(Clave) references Cliente(ClaveCuenta));
 
+create table Tarjeta 
+(id_tarjeta int primary key identity(1,1),
+numero_tarjeta char(16) unique not null,
+cvv char(3) not null,
+id_cuenta_asociada varchar(5) not null,
+foreign key (id_cuenta_asociada) references Cuenta(ClaveCuenta));
 INSERT INTO Sucursal VALUES('Zacatecas Sur', 'Tlaltenango');
 
 
@@ -67,10 +71,16 @@ select * from Transaccion
 select * from Deposito
 select * from Tarjeta
 
-CREATE TABLE Tarjeta (
-    id_tarjeta INT PRIMARY KEY IDENTITY(1,1),
-    numero_tarjeta CHAR(16) UNIQUE NOT NULL,
-    cvv CHAR(3) NOT NULL,
-    id_cuenta_asociada varchar(5) NOT NULL,
-    FOREIGN KEY (id_cuenta_asociada) REFERENCES Cuenta(ClaveCuenta)
-);
+SELECT distinct Cliente.ClaveCuenta,NombreCliente,ApellidoM,ApeelidoP,Saldo,Sucursal,numero_tarjeta 
+FROM Cuenta,Cliente,Tarjeta 
+WHERE Cliente.ClaveCuenta=Cuenta.ClaveCuenta and  Cliente.ClaveCuenta=id_cuenta_asociada and Cliente.ClaveCuenta='tl-01'
+
+ALTER TABLE Cliente ADD Activo BIT DEFAULT 1;
+GO
+
+UPDATE Cliente SET Activo = 1;
+GO
+
+ALTER TABLE Cliente ADD Telefono VARCHAR(15);
+ALTER TABLE Cliente ADD Email VARCHAR(50);
+GO
