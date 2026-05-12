@@ -67,7 +67,7 @@ def mostrar() -> list:
     except Exception as e:
         print(f"Error al mostrar {e}")
     finally:
-        conn.close
+        conn.close()
 
 
 
