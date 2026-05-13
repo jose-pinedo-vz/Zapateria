@@ -105,6 +105,9 @@ class inventario:
             color = self.ent_buscar_color.get().strip()
             self.llenarTalbaProd_color(color)
 
+        self.btn_buscar_color = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
+            command=lambda: preColor())
+        self.btn_buscar_color.grid(row=0, column=5, padx=5, pady=5)
 
 
         self.lb_busqueda3 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR TALLA", text_color="#1A1A1A")
@@ -324,7 +327,7 @@ class inventario:
         self.lb_busqueda = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
         self.lb_busqueda.grid(row=0, column=0, padx=10, pady=10)
 
-        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
+        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="", width=150)
         self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
 
         self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733")
@@ -369,10 +372,8 @@ class inventario:
                                         command=lambda: self.eliminar_UI())
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="AGREGAR",
-                                        width=150,
-                                        command=lambda: self.AgregarProducto()
-                                        )
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="AGREGAR",width=150,
+            command=lambda: self.AgregarProducto())
         self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
 
         self.llenarTablaProductos()
@@ -395,14 +396,14 @@ class inventario:
         self.create_producto = ctk.CTkToplevel()
         self.create_producto.geometry("500x800")
         self.create_producto.title("DAR DE ALTA UN NUEVO PRODUCTO")
-        self.create_producto.grab_set()
+        # self.create_producto.grab_set()
         self.create_producto.configure(fg_color="#E5E5E5")
 
-        self.en_modelo = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
-        self.en_modelo.pack(padx=10, pady=5)
+        self.en_modelo2 = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+        self.en_modelo2.pack(padx=10, pady=5)
 
-        self.en_marca = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
-        self.en_marca.pack(padx=10, pady=5)
+        self.en_marca2 = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+        self.en_marca2.pack(padx=10, pady=5)
 
         opciones_seccion = ["Caballeros", "Damas", "Niños", "Niña", "Bebé", "Unisex"]
 
@@ -444,8 +445,8 @@ class inventario:
         self.btn_registrar.pack(padx=10, pady=5)
 
     def insertarDatosProducto(self):
-        modelo = self.en_modelo.get()
-        marca = self.en_marca.get()
+        modelo = self.en_modelo2.get()
+        marca = self.en_marca2.get()
         seccion = self.combo_seccion.get()
         categoria = self.combo_categoria.get()
 
@@ -1172,4 +1173,4 @@ class inventario:
 
 
 
-obj = inventario()
+# obj = inventario()

@@ -4,16 +4,32 @@ def coneccion():
     try:
         DB_CONFIG = (
             "DRIVER={SQL Server};"
-            "SERVER=localhost;"
+            "SERVER=.;"
             "DATABASE=Zapateria;"
             "TrustServerCertificate=yes;"
         )
         conn = pyodbc.connect(DB_CONFIG)
-        print("conexion exitosa")
+        # print("Conexión exitosa")
         return conn
     except:
-        print("Hubo un error")
-        return None
+        # print("Ubo un error")
+        # return None
+        try:
+            DB_CONFIG = (
+                "DRIVER={ODBC Driver 18 for SQL Server};"
+                "SERVER=localhost;"
+                "DATABASE=Zapateria;"
+                "UID=sa;"
+                "PWD=JitlerSQL2026!;"
+                "Encrypt=yes;"
+                "TrustServerCertificate=yes;"
+            )
+            conn = pyodbc.connect(DB_CONFIG)
+            print("Funciono")
+            return conn
+        except:
+            print("Ubo un error2")
+            return None
 
 
 def insert(clave, modelo, marca, seccion, categoria) -> None:

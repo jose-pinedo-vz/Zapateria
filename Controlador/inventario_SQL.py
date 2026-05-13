@@ -18,7 +18,7 @@ def coneccion():
             DB_CONFIG = (
                 "DRIVER={ODBC Driver 18 for SQL Server};"
                 "SERVER=localhost;"
-                "DATABASE=Zapateria2;"
+                "DATABASE=Zapateria;"
                 "UID=sa;"
                 "PWD=JitlerSQL2026!;"
                 "Encrypt=yes;"

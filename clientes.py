@@ -124,7 +124,7 @@ class cliente:
 
 
         self.mostrarTalbe()
-        self.ventana.mainloop()
+        # self.ventana.mainloop()
 
 
     def BuscarPorNombre(self):
@@ -547,8 +547,3 @@ class cliente:
             self.clave_cliente_a_eliminar = valores[0]
             self.nombre_a_eliminar = valores[1]
             print(self.clave_cliente_a_eliminar)
-
-
-
-if __name__ == "__main__":
-    obj = cliente()
