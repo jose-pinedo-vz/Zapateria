@@ -84,3 +84,17 @@ GO
 ALTER TABLE Cliente ADD Telefono VARCHAR(15);
 ALTER TABLE Cliente ADD Email VARCHAR(50);
 GO
+
+SELECT numero_tarjeta from Tarjeta WHERE id_cuenta_asociada='tl-01'
+SELECT numero_tarjeta from Tarjeta WHERE id_cuenta_asociada='tl-01'
+
+select * from Cuenta
+UPDATE Cuenta SET Saldo=Saldo - 100 from Cuenta INNER JOIN Tarjeta ON Cuenta.ClaveCuenta=Tarjeta.id_cuenta_asociada WHERE Tarjeta.numero_tarjeta=7193052796455540 AND Cuenta.Saldo >= 100 
+select * from Cliente
+
+UPDATE Cuenta SET Saldo=Saldo + 10
+where Saldo >= 10
+and exists(select 1 from Tarjeta where  numero_tarjeta=7193052796455540 and Cuenta.ClaveCuenta=Tarjeta.id_cuenta_asociada and cvv=?)
+and exists(select 1 from Cliente where  Cuenta.ClaveCuenta=Cliente.ClaveCuenta and Cliente.Activo=1)
+SELECT * FROM Cuenta
+select * from Tarjeta

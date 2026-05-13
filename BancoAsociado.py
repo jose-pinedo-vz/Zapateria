@@ -520,11 +520,17 @@ class BancoGuachinango():
         entry_destino=ctk.CTkEntry(self.Emergente,font=("Arial",15,"bold"))
         entry_destino.place(relx=.5,rely=.6,anchor=ctk.CENTER)
 
+        ctk.CTkLabel(self.Emergente,text="CVV",font=("Arial",15,"bold"),text_color=self.COLOR_NEGRO
+                         ).place(relx=.5,rely=.7,anchor=ctk.CENTER)
+        entry_clave=ctk.CTkEntry(self.Emergente,font=("Arial",15,"bold"))
+        entry_clave.place(relx=.5,rely=.8,anchor=ctk.CENTER)
+
 
         def Confirmar():
             try:
                 cantidad=Decimal(entry_cantidad.get())
                 destino=entry_destino.get()
+                cvv=entry_clave.get().strip()
 
                 deposito=self.Realizar_deposito(cantidad,destino,cuenta)
                 if deposito:
@@ -552,22 +558,43 @@ class BancoGuachinango():
                                 command=self.Emergente.destroy)
         cancelar.place(relx=.65,rely=.7,anchor=ctk.CENTER)
         
-    def Realizar_deposito(self, monto, destino, remitente):
+    def Realizar_deposito(self, monto, destino, remitente,cvv):
         conexion=None
         cursor=None
         try:
             conexion=ConexionBanco.conectar_db()
             cursor=conexion.cursor()
-           
-            if remitente==destino:
-                cursor.execute("UPDATE Cuenta SET Saldo=Saldo + ? WHERE ClaveCuenta=?",
-                                (monto, destino))
+            if len(destino)!=16:
+                cursor.execute("SELECT numero_tarjeta from Tarjeta WHERE id_cuenta_asociada=?",
+                                    (destino))
+                fila=cursor.fetchone()
+                tarjeta_destino=fila.numero_tarjeta
+            else:
+                tarjeta_destino=destino
+
+            cursor.execute("SELECT numero_tarjeta from Tarjeta WHERE id_cuenta_asociada=?",
+                                (remitente))
+            fila=cursor.fetchone()
+            tarjeta_remitente=fila.numero_tarjeta
+            
+
+            if tarjeta_destino==tarjeta_remitente:
+                cursor.execute("""UPDATE Cuenta SET Saldo=Saldo + ?
+                                where exists(select 1 from Tarjeta where  numero_tarjeta=? and Cuenta.ClaveCuenta=Tarjeta.id_cuenta_asociada,and cvv=?)
+                                and exists(select 1 from Cliente where  Cuenta.ClaveCuenta=Cliente.ClaveCuenta and Cliente.Activo=1)""",
+                                (monto, tarjeta_destino,cvv))
             
             else:
-                cursor.execute("UPDATE Cuenta SET Saldo=Saldo - ? WHERE ClaveCuenta=? AND Saldo >= ?",
-                                (monto, remitente, monto))
-                cursor.execute("UPDATE Cuenta SET Saldo=Saldo + ? WHERE ClaveCuenta=?",
-                                (monto, destino))
+                cursor.execute("""UPDATE Cuenta SET Saldo=Saldo - ?
+                        where Saldo >= ?
+                        and exists(select 1 from Tarjeta where  numero_tarjeta=? and Cuenta.ClaveCuenta=Tarjeta.id_cuenta_asociada)
+                        and exists(select 1 from Cliente where  Cuenta.ClaveCuenta=Cliente.ClaveCuenta and Cliente.Activo=1)""",
+                                (monto, monto, tarjeta_remitente,cvv))
+                
+                cursor.execute("""UPDATE Cuenta SET Saldo=Saldo + ?
+                                where exists(select 1 from Tarjeta where  numero_tarjeta=? and Cuenta.ClaveCuenta=Tarjeta.id_cuenta_asociada)
+                                and exists(select 1 from Cliente where  Cuenta.ClaveCuenta=Cliente.ClaveCuenta and Cliente.Activo=1)""",
+                                (monto, tarjeta_destino))
             
             conexion.commit()
             return True
