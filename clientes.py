@@ -39,7 +39,7 @@ class cliente:
         lb_busqueda1 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
         lb_busqueda1.grid(row=0, column=0, padx=10, pady=10)
 
-        self.ent_buscar_calve = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=250)
+        self.ent_buscar_calve = ctk.CTkEntry(self.frame_busqueda, placeholder_text="C!", width=250)
         self.ent_buscar_calve.grid(row=0, column=1, padx=5, pady=5)
 
         # def buscar_clave():
@@ -55,7 +55,7 @@ class cliente:
         lb_busqueda2 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR NOMBRE", text_color="#1A1A1A")
         lb_busqueda2.grid(row=0, column=3, padx=10, pady=10)
 
-        self.ent_buscar_nombre = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: Juan", width=250)
+        self.ent_buscar_nombre = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Juan", width=250)
         self.ent_buscar_nombre.grid(row=0, column=4, padx=5, pady=5)
 
         self.btn_buscar_nombre = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
@@ -124,7 +124,7 @@ class cliente:
 
 
         self.mostrarTalbe()
-        self.ventana.mainloop()
+        # self.ventana.mainloop()
 
 
     def BuscarPorNombre(self):
@@ -547,8 +547,3 @@ class cliente:
             self.clave_cliente_a_eliminar = valores[0]
             self.nombre_a_eliminar = valores[1]
             print(self.clave_cliente_a_eliminar)
-
-
-
-if __name__ == "__main__":
-    obj = cliente()
