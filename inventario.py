@@ -78,14 +78,59 @@ class inventario:
         self.frame_busqueda = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.frame_busqueda.pack(pady=20, fill="x", padx=20)
 
-        self.lb_busqueda = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
-        self.lb_busqueda.grid(row=0, column=0, padx=10, pady=10)
+        # busquedas
 
-        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
-        self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
+        self.lb_busqueda1 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
+        self.lb_busqueda1.grid(row=0, column=0, padx=10, pady=10)
 
-        self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733")
-        self.btn_buscar.grid(row=0, column=2, padx=5, pady=5)
+        self.ent_buscar_clave = ctk.CTkEntry(self.frame_busqueda, placeholder_text="C1", width=150,)
+        self.ent_buscar_clave.grid(row=0, column=1, padx=5, pady=5)
+
+        def preClave():
+            clave = self.ent_buscar_clave.get().strip()
+            self.llenarTalbaProd_clave(clave)
+
+        self.btn_buscar_clave = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
+            command=lambda: preClave())
+        self.btn_buscar_clave.grid(row=0, column=2, padx=5, pady=5)
+
+
+        self.lb_busqueda2 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR COLOR", text_color="#1A1A1A")
+        self.lb_busqueda2.grid(row=0, column=3, padx=10, pady=10)
+
+        self.ent_buscar_color = ctk.CTkEntry(self.frame_busqueda, placeholder_text="AZUL", width=150,)
+        self.ent_buscar_color.grid(row=0, column=4, padx=5, pady=5)
+
+        def preColor():
+            color = self.ent_buscar_color.get().strip()
+            self.llenarTalbaProd_color(color)
+
+        self.btn_buscar_color = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
+            command=lambda: preColor())
+        self.btn_buscar_color.grid(row=0, column=5, padx=5, pady=5)
+
+
+        self.lb_busqueda3 = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR TALLA", text_color="#1A1A1A")
+        self.lb_busqueda3.grid(row=0, column=6, padx=10, pady=10)
+
+        self.ent_buscar_talla = ctk.CTkEntry(self.frame_busqueda, placeholder_text="TALLA", width=150,)
+        self.ent_buscar_talla.grid(row=0, column=7, padx=5, pady=5)
+
+        def preTalla():
+            talla = self.ent_buscar_talla.get().strip()
+            self.llenarTalbaProd_talla(talla)
+
+        self.btn_buscar_talla = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733",
+            command=lambda: preTalla())
+        self.btn_buscar_talla.grid(row=0, column=8, padx=5, pady=5)
+
+        self.btn_buscar_todos = ctk.CTkButton(self.frame_busqueda, text="Todos", width=100, fg_color="#FF5733",
+            command=lambda: self.llenarTalbaProd())
+        self.btn_buscar_todos.grid(row=0, column=9, padx=5, pady=5)
+
+
+
+
 
         self.frame_acciones = ctk.CTkFrame(self.frame_contenido, fg_color="#E5E5E5")
         self.frame_acciones.pack(pady=20, fill="x", padx=20)
@@ -157,6 +202,75 @@ class inventario:
 
         self.llenarTalbaProd()
 
+    def llenarTalbaProd_talla(self, talla):
+        self.imagenes_renderizadas.clear()
+
+        for item in self.tablaProductos.get_children():
+            self.tablaProductos.delete(item)
+
+        datos = inventario_SQL.buscarPorTalla(talla)
+
+        if datos:
+            for fila in datos:
+                ruta_img = fila[0]
+                resto_datos = fila[1:]
+
+                foto_final = self.cargar_y_redimensionar(ruta_img)
+                self.imagenes_renderizadas.append(foto_final)
+
+                self.tablaProductos.insert(
+                    "",
+                    "end",
+                    image=foto_final,
+                    values=tuple(str(item).strip() for item in resto_datos)
+                )
+
+    def llenarTalbaProd_color(self, color):
+        self.imagenes_renderizadas.clear()
+
+        for item in self.tablaProductos.get_children():
+            self.tablaProductos.delete(item)
+
+        datos = inventario_SQL.buscarPorColor(color)
+
+        if datos:
+            for fila in datos:
+                ruta_img = fila[0]
+                resto_datos = fila[1:]
+
+                foto_final = self.cargar_y_redimensionar(ruta_img)
+                self.imagenes_renderizadas.append(foto_final)
+
+                self.tablaProductos.insert(
+                    "",
+                    "end",
+                    image=foto_final,
+                    values=tuple(str(item).strip() for item in resto_datos)
+                )
+
+
+    def llenarTalbaProd_clave(self, clave):
+        self.imagenes_renderizadas.clear()
+
+        for item in self.tablaProductos.get_children():
+            self.tablaProductos.delete(item)
+
+        datos = inventario_SQL.buscarPorClave(clave)
+
+        if datos:
+            for fila in datos:
+                ruta_img = fila[0]
+                resto_datos = fila[1:]
+
+                foto_final = self.cargar_y_redimensionar(ruta_img)
+                self.imagenes_renderizadas.append(foto_final)
+
+                self.tablaProductos.insert(
+                    "",
+                    "end",
+                    image=foto_final,
+                    values=tuple(str(item).strip() for item in resto_datos)
+                )
 
     def llenarTalbaProd(self):
         self.imagenes_renderizadas.clear()
@@ -213,7 +327,7 @@ class inventario:
         self.lb_busqueda = ctk.CTkLabel(self.frame_busqueda, text="BUSCAR CLAVE", text_color="#1A1A1A")
         self.lb_busqueda.grid(row=0, column=0, padx=10, pady=10)
 
-        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="Ej: P001", width=150)
+        self.ent_buscar = ctk.CTkEntry(self.frame_busqueda, placeholder_text="", width=150)
         self.ent_buscar.grid(row=0, column=1, padx=5, pady=5)
 
         self.btn_buscar = ctk.CTkButton(self.frame_busqueda, text="Buscar", width=100, fg_color="#FF5733")
@@ -258,10 +372,8 @@ class inventario:
                                         command=lambda: self.eliminar_UI())
         self.btn_eliminar.grid(row=1, column=0, padx=10, pady=10)
 
-        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="AGREGAR",
-                                        width=150,
-                                        command=lambda: self.AgregarProducto()
-                                        )
+        self.btn_surtir = ctk.CTkButton(self.frame_acciones,fg_color="#FF5733", text="AGREGAR",width=150,
+            command=lambda: self.AgregarProducto())
         self.btn_surtir.grid(row=0, column=1, padx=10, pady=10)
 
         self.llenarTablaProductos()
@@ -284,14 +396,14 @@ class inventario:
         self.create_producto = ctk.CTkToplevel()
         self.create_producto.geometry("500x800")
         self.create_producto.title("DAR DE ALTA UN NUEVO PRODUCTO")
-        self.create_producto.grab_set()
+        # self.create_producto.grab_set()
         self.create_producto.configure(fg_color="#E5E5E5")
 
-        self.en_modelo = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
-        self.en_modelo.pack(padx=10, pady=5)
+        self.en_modelo2 = ctk.CTkEntry(self.create_producto, placeholder_text="MODELO", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+        self.en_modelo2.pack(padx=10, pady=5)
 
-        self.en_marca = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
-        self.en_marca.pack(padx=10, pady=5)
+        self.en_marca2 = ctk.CTkEntry(self.create_producto, placeholder_text="MARCA", text_color="#FFFFFF", width=200, height=70, font=("Arial", 15))
+        self.en_marca2.pack(padx=10, pady=5)
 
         opciones_seccion = ["Caballeros", "Damas", "Niños", "Niña", "Bebé", "Unisex"]
 
@@ -333,8 +445,8 @@ class inventario:
         self.btn_registrar.pack(padx=10, pady=5)
 
     def insertarDatosProducto(self):
-        modelo = self.en_modelo.get()
-        marca = self.en_marca.get()
+        modelo = self.en_modelo2.get()
+        marca = self.en_marca2.get()
         seccion = self.combo_seccion.get()
         categoria = self.combo_categoria.get()
 
@@ -704,7 +816,7 @@ class inventario:
 
             ruta = self.ent_ruta_img.get()
             if ruta.strip() == ""  or not os.path.exists(ruta):
-                ruta = "SIN IMAGEN"
+                ruta_final = "SIN IMAGEN"
             else:
                 nombre_arhivo = os.path.basename(ruta)
                 ruta_destino = os.path.join(CARPETA_DESTINO, nombre_arhivo)
@@ -723,6 +835,8 @@ class inventario:
                 messagebox.showinfo("ERORR", "POSIBLE ERROR EN LOS DATOS")
 
             inventario_SQL.insert(Clave, CantidadPorducto, Talla, Precio, color, ruta_final)
+
+            self.llenarTalbaProd()
 
         self.btn_surtir = ctk.CTkButton(frame_izq, text="SURTIR PRODUCTO", fg_color=COLOR_BOTON,
                                        height=60, font=("Arial", 16, "bold"),
@@ -827,33 +941,33 @@ class inventario:
         # btn_explorar.pack(side="left")
 
         def recupareraDatos():
-            CARPETA_DESTINO = "imagenes_productos"
-            if not os.path.exists(CARPETA_DESTINO):
-                os.mkedir(CARPETA_DESTINO)\
-
-            ruta = self.ent_ruta_img.get()
-            if ruta.strip() == ""  or not os.path.exists(ruta):
-                ruta = "SIN IMAGEN"
-            else:
-                nombre_arhivo = os.path.basename(ruta)
-                ruta_destino = os.path.join(CARPETA_DESTINO, nombre_arhivo)
-                shutil.copy2(ruta, ruta_destino)
-                ruta_final = ruta_destino
-
             try:
                 Clave = self.ent_clave.get()
                 CantidadPorducto = int(self.ent_cantidad.get())
                 Talla = int(self.ent_talla.get())
                 Precio = float(self.ent_precio.get())
-                color = self.ent_color.get()
+                color = self.ent_color.get().strip()
+                if Talla < 0 or Precio <= 0:
+                    print("print")
+                    messagebox.showinfo("ERORR", "POSIBLE ERROR EN LOS DATOS")
+                    return
+                if color == "":
+                    print("print")
+                    messagebox.showinfo("ERORR", "POSIBLE ERROR EN LOS DATOS")
+                    return
+
+                inventario_SQL.actualizar(Clave, CantidadPorducto, Talla, Precio, color, self.clave_anterior, self.talla_anterior, self.color_anterior)
                 ventana_inv.destroy()
-            except:
+
+                self.llenarTalbaProd()
+
+            except Exception as e:
+                print(e)
                 from tkinter import messagebox
                 messagebox.showinfo("ERORR", "POSIBLE ERROR EN LOS DATOS")
 
-            inventario_SQL.insert(Clave, CantidadPorducto, Talla, Precio, color, ruta_final)
 
-        self.btn_surtir = ctk.CTkButton(frame_izq, text="SURTIR PRODUCTO", fg_color=COLOR_BOTON,
+        self.btn_surtir = ctk.CTkButton(frame_izq, text="ACTUALIZAR PRODUCTO", fg_color=COLOR_BOTON,
                                        height=60, font=("Arial", 16, "bold"),
                                        command=lambda: recupareraDatos())
         self.btn_surtir.pack(side="bottom", pady=20, fill="x")
@@ -956,6 +1070,10 @@ class inventario:
             self.precio_E_I = valores[4]
             self.color_E_I = valores[5]
 
+            self.clave_anterior = self.clave_E_I
+            self.talla_anterior = self.talla_E_I
+            self.color_anterior = self.color_E_I
+
 
             self.ent_clave.configure(state="normal")
             self.ent_clave.delete(0, "end")
@@ -1055,4 +1173,4 @@ class inventario:
 
 
 
-obj = inventario()
+# obj = inventario()

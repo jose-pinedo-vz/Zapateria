@@ -7,11 +7,101 @@ USE Zapateria;
 --Ejecutar en este orden las tablas para crear la base de datos sin erroes
 
 
+<<<<<<< HEAD
 create table Usuario
 (Nombre varchar(15),
 ApellidoP varchar(15), 
 ApellidoM varchar(15),
 primary key(Nombre,ApellidoP))
+=======
+
+-- 1. TABLAS INDEPENDIENTES (Catálogos)
+CREATE TABLE Usuario (
+    Nombre VARCHAR(15),
+    ApellidoP VARCHAR(15), 
+    ApellidoM VARCHAR(15),
+    PRIMARY KEY (Nombre, ApellidoP)
+);
+
+CREATE TABLE Horarios (
+    id_horario INT PRIMARY KEY, 
+    horario VARCHAR(20)
+);
+
+CREATE TABLE color (
+    id_color INT PRIMARY KEY, 
+    color CHAR(10)
+);
+
+CREATE TABLE Talla (
+    id_talla INT PRIMARY KEY, 
+    talla CHAR(2)
+);
+
+CREATE TABLE seccion (
+    id_seccion INT PRIMARY KEY, 
+    seccion CHAR(10)
+);
+
+CREATE TABLE categoria (
+    id_categoria INT PRIMARY KEY, 
+    categoria CHAR(10)
+);
+
+CREATE TABLE marca (
+    id_marca INT PRIMARY KEY, 
+    marca CHAR(15)
+);
+
+CREATE TABLE Ciudades (
+    id_ciudad INT PRIMARY KEY IDENTITY(1,1),
+    nombre_ciudad VARCHAR(50) NOT NULL
+);
+
+-- 2. TABLAS DE CONTACTO Y DIRECCIÓN
+CREATE TABLE Telefonos (
+    id_telefono INT PRIMARY KEY IDENTITY(1,1), 
+    id_duenio CHAR(15) NOT NULL,  
+    tipo_entidad VARCHAR(15) NOT NULL, -- Cliente, Proveedor o Empleado 
+    numero_telefono VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE CodigosPostales (
+    cp CHAR(5) PRIMARY KEY,  
+    id_ciudad INT, 
+    FOREIGN KEY (id_ciudad) REFERENCES Ciudades(id_ciudad)
+);
+
+CREATE TABLE Direccion (
+    idDireccion INT PRIMARY KEY IDENTITY(1,1), 
+    calle VARCHAR(50), 
+    numero_externo VARCHAR(10),
+    cp CHAR(5), 
+    FOREIGN KEY (cp) REFERENCES CodigosPostales(cp)
+);
+
+-- 3. TABLAS DE PRODUCTOS Y PERSONAL
+CREATE TABLE modelo (
+    clave INT PRIMARY KEY, 
+    id_marca INT, 
+    modelo CHAR(20), 
+    FOREIGN KEY (id_marca) REFERENCES marca(id_marca)
+);
+
+CREATE TABLE Personal (
+    ClaveAcceso VARCHAR(5) PRIMARY KEY,
+    Direccion INT, 
+    NoEmergencia INT, 
+    Sueldo MONEY, 
+    horario INT,
+    Nombre VARCHAR(15), 
+    ApellidoP VARCHAR(15),
+    FOREIGN KEY (Nombre, ApellidoP) REFERENCES Usuario(Nombre, ApellidoP),
+    FOREIGN KEY (horario) REFERENCES Horarios(id_horario), 
+    FOREIGN KEY (Direccion) REFERENCES Direccion(idDireccion), 
+    FOREIGN KEY (NoEmergencia) REFERENCES Telefonos(id_telefono)
+);
+>>>>>>> cc200d39e44888fa05999940f35c92fa19fd7dbe
 
 
 CREATE TABLE Horarios

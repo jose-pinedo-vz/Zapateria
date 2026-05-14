@@ -40,15 +40,15 @@ def Generar_clave_producto() -> str:
         else:
             nueva_clave = 1
 
- 
+
         with open(ruta, "w") as archivo:
             archivo.write(str(nueva_clave))
-        
+
         return f"C{nueva_clave}"
 
     except Exception as e:
         print(f"Error al generar clave: {e}")
-        
+
         with open(ruta, "w") as archivo:
             archivo.write("1")
         return "C1"

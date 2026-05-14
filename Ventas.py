@@ -206,7 +206,9 @@ class ModuloVentas():
         
         ctk.CTkLabel(pago_win, text="Seleccione Forma de Pago", font=("Arial", 16)).place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
         
-        tabview=ctk.CTkTabview(pago_win, segmented_button_selected_color=self.COLOR_PRIMARIO, segmented_button_selected_hover_color="#F4A7C5")
+        tabview=ctk.CTkTabview(pago_win, segmented_button_selected_color=self.COLOR_PRIMARIO,
+                               segmented_button_selected_hover_color="#F4A7C5",
+                               text_color=self.COLOR_TEXTO_NEGRO)
         tabview.place(relx=0.5, rely=0.55, relwidth=0.9, relheight=0.8, anchor=ctk.CENTER)
         
         tabview.add("Efectivo")
@@ -225,17 +227,25 @@ class ModuloVentas():
         lbl_total=ctk.CTkLabel(tabview.tab("Tarjeta"), text=f"Total a pagar: ${total}", font=("Arial", 20, "bold"))
         lbl_total.place(relx=0.5, rely=0.2, anchor=ctk.CENTER)
         
-        entry_pago=ctk.CTkEntry(tabview.tab("Tarjeta"), width=200)
-        entry_pago.place(relx=0.5, rely=0.45, anchor=ctk.CENTER)
+        entry_tarjeta=ctk.CTkEntry(tabview.tab("Tarjeta"), placeholder_text="Tarjeta", width=200)
+        entry_tarjeta.place(relx=0.5, rely=0.45, anchor=ctk.CENTER)
+        entry_cvv=ctk.CTkEntry(tabview.tab("Tarjeta"), placeholder_text="CVV", width=100)
+        entry_cvv.place(relx=0.5, rely=0.55, anchor=ctk.CENTER)
         
         btn_finalizar=ctk.CTkButton(tabview.tab("Tarjeta"), text="Confirmar y Generar Ticket", fg_color=self.COLOR_SECUNDARIO, width=250,
-                                      command=lambda:self.Pago_tarjeta(total) )
+                                      command=lambda:self.Pago_tarjeta(total,entry_tarjeta,entry_cvv) )
         btn_finalizar.place(relx=0.5, rely=0.75, anchor=ctk.CENTER)
     
-    def Pago_tarjeta(self,total):
-        pass
+    def Pago_tarjeta(self,total,ntry_tarjeta,ntry_cvv):
+        destino="9271879297306915"
+        monto=total
+        remitente=ntry_tarjeta.get().strip()
+        cvv=ntry_cvv.get().strip()
+        import BancoAsociado
+        banco=BancoAsociado.BancoGuachinango
+        banco.Realizar_deposito(self,monto, destino, remitente,cvv)
     def Pago_efectivo(self,total):
-        messagebox.showinfo("Venta Exitosa", "Ticket generado en PDF y registro guardado.")
+        CTkMessagebox(title="Venta Exitosa", message="Ticket generado en PDF y registro guardado.", icon="check")
 
     def mostrar_interfaz_historial(self):
         self.limpiar_contenedor()

@@ -16,6 +16,7 @@ class Ventana_GUI():
         """A quien le toque: esto es para tomar al responsable o quien entro al sistema"""
         clave="E001"
         import pyodbc
+
         conexion=(
         "Driver={SQL Server};"
         "Server=localhost;"
@@ -26,6 +27,24 @@ class Ventana_GUI():
             print("Conexión exitosa")
         except Exception as e:
             print(f"Error al conectar: {e}")
+            try:
+                DB_CONFIG = (
+                        "DRIVER={ODBC Driver 18 for SQL Server};"
+                        "SERVER=localhost;"
+                        "DATABASE=Zapateria;"
+                        "UID=sa;"
+                        "PWD=JitlerSQL2026!;"
+                        "Encrypt=yes;"
+                        "TrustServerCertificate=yes;"
+                )
+                conexion = pyodbc.connect(DB_CONFIG)
+                print("coneccion exitosa")
+            except:
+                print("Ubo un error2")
+
+
+
+
 
         cursor=conexion.cursor()
         cursor.execute("""
@@ -33,13 +52,13 @@ class Ventana_GUI():
             FROM Personal
             WHERE ClaveAcceso=?
             """,(clave,))
-        
+
         fila=cursor.fetchone()
         self.Responsable_turno=(fila.Nombre+" "+fila.ApellidoP)
         cursor.close()
         conexion.close()
         print("Responsable: ",self.Responsable_turno)
-        
+
 
         self.Ventana=ctk.CTk()
         self.Ventana.geometry("1000x700")
@@ -50,7 +69,7 @@ class Ventana_GUI():
 
         self.Frame_principal=ctk.CTkFrame(self.Ventana,
                                           fg_color=self.COLOR_FONDO_BLANCO,
-                                          
+
                                           )
         self.Frame_principal.place(relx=0.5, rely=0.6, relheight=.75,relwidth=.9,anchor=ctk.CENTER)
 
@@ -66,14 +85,19 @@ class Ventana_GUI():
                                 command=self.Llama_Modulo_Ventas)
         btn_Venta.place(relx=.25,rely=.15,anchor=ctk.CENTER)
 
-        btn_extra1=ctk.CTkButton(self.Ventana,text="Extra 1",
-                                   fg_color=self.COLOR_COMPLEMENTARIO,
-                                   text_color=self.COLOR_TEXTO_NEGRO)
-        btn_extra1.place(relx=.4,rely=.15,anchor=ctk.CENTER)
+        btn_extra1 = ctk.CTkButton(
+                    self.Ventana,
+                    text="Clientes",
+                    fg_color=self.COLOR_COMPLEMENTARIO,
+                    text_color=self.COLOR_TEXTO_NEGRO,
+                    command=self.llamar_modulo_clientes
+                )
+        btn_extra1.place(relx=.4, rely=.15, anchor=ctk.CENTER)
 
-        btn_extra2=ctk.CTkButton(self.Ventana,text="Extra 2",
+        btn_extra2=ctk.CTkButton(self.Ventana,text="Productos",
                                    fg_color=self.COLOR_COMPLEMENTARIO,
-                                   text_color=self.COLOR_TEXTO_NEGRO)
+                                   text_color=self.COLOR_TEXTO_NEGRO,
+                                   command=self.llamar_modulo_inventario)
         btn_extra2.place(relx=.55,rely=.15,anchor=ctk.CENTER)
 
         btn_extra3=ctk.CTkButton(self.Ventana,text="Extra 3",
@@ -86,7 +110,7 @@ class Ventana_GUI():
                                    text_color=self.COLOR_TEXTO_NEGRO)
         btn_extra4.place(relx=.85,rely=.15,anchor=ctk.CENTER)
 
-        
+
 
         lblTitulo=ctk.CTkLabel(self.Ventana,text="Zapateria Los Dos Hermanos\nS.A de C.V.",
                                font=("Arial", 20,"bold"),
@@ -108,6 +132,17 @@ class Ventana_GUI():
         self.BorraFrame()
         Finanzas=ModuloFinanzas()
         Finanzas.Iniciar(self.Frame_principal,self.Responsable_turno)
-    
+
+    def llamar_modulo_clientes(self):
+        self.BorraFrame()
+        from clientes import cliente
+        obj = cliente()
+
+    def llamar_modulo_inventario(self):
+        self.BorraFrame()
+        from inventario import inventario
+        obj = inventario()
+
+
 obj=Ventana_GUI()
 obj.Iniciar()
