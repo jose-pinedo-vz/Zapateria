@@ -12,11 +12,8 @@ class Proveedor():
         self.ventana.resizable(False, False)
         self.ventana.configure(fg_color="#1A1A1A")
 
-        # Conectar a base de datos
         self.conectar_bd()
-
         self.menu_principal()
-
         self.ventana.mainloop()
 
     def conectar_bd(self):
@@ -30,7 +27,6 @@ class Proveedor():
         print("Conectado a la base de datos")
 
     def menu_principal(self):
-        # Limpiar ventana
         for widget in self.ventana.winfo_children():
             widget.destroy()
 
@@ -49,7 +45,6 @@ class Proveedor():
         self.ventanapro.configure(fg_color="#1A1A1A")
         self.ventanapro.geometry("1500x900")
 
-        # Botón volver al menú
         volver = ctk.CTkButton(self.ventanapro, text="← Volver", fg_color="#8DCCE3", hover_color="#F8C8DC", font=("Arial", 18), corner_radius=15, width=100, height=40, command=self.volver_menu_proveedor)
         volver.pack(pady=(20, 10), anchor="w", padx=20)
 
@@ -62,7 +57,6 @@ class Proveedor():
         marco_registro = ctk.CTkFrame(marco_principal, border_width=2, border_color="#F8C8DC", corner_radius=15, fg_color="white")
         marco_registro.pack(fill="x", padx=20, pady=10)
 
-        # Labels
         frame_labels = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_labels.pack(pady=(15, 5))
 
@@ -71,7 +65,6 @@ class Proveedor():
         ctk.CTkLabel(frame_labels, text="Dirección:", font=("Arial", 14), text_color="#1A1A1A").pack(side="left", padx=40)
         ctk.CTkLabel(frame_labels, text="Contacto:", font=("Arial", 14), text_color="#1A1A1A").pack(side="left", padx=40)
 
-        # Campos de texto
         frame_campos = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_campos.pack(pady=(5, 15))
 
@@ -87,7 +80,6 @@ class Proveedor():
         self.cacontacto = ctk.CTkEntry(frame_campos, width=180, height=35, fg_color="white", border_color="#F8C8DC", text_color="#1A1A1A", border_width=2, corner_radius=10)
         self.cacontacto.pack(side="left", padx=30)
 
-        # Botones
         frame_botones = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_botones.pack(pady=(5, 20))
 
@@ -100,7 +92,6 @@ class Proveedor():
         boton_limpiar = ctk.CTkButton(frame_botones, text="Limpiar campos", fg_color="#6c757d", hover_color="#5a6268", text_color="white", width=180, height=40, corner_radius=10, command=self.limpiar_campos_proveedor)
         boton_limpiar.pack(side="left", padx=15)
 
-        # Tabla
         marco_tabla = ctk.CTkFrame(marco_principal, border_width=2, border_color="#F8C8DC", corner_radius=15, fg_color="white")
         marco_tabla.pack(fill="both", expand=True, padx=20, pady=10)
 
@@ -115,10 +106,9 @@ class Proveedor():
         self.frame_datos_proveedores = ctk.CTkFrame(marco_tabla, fg_color="transparent")
         self.frame_datos_proveedores.pack(pady=5)
 
-        # Cargar proveedores desde la base de datos
+        self.proveedor_seleccionado = None
         self.mostrar_proveedores()
 
-        # Botón salir
         btn_salir = ctk.CTkButton(self.ventanapro, text="Salir", fg_color="#8DCCE3", hover_color="#F8C8DC", text_color="white", corner_radius=20, width=120, height=40, command=self.ventanapro.destroy)
         btn_salir.pack(pady=20)
 
@@ -140,16 +130,14 @@ class Proveedor():
         marco_registro = ctk.CTkFrame(marco_principal, border_width=2, border_color="#F8C8DC", corner_radius=15, fg_color="white")
         marco_registro.pack(fill="x", padx=20, pady=10)
 
-        # Labels
         frame_labels = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_labels.pack(pady=(15, 5))
 
         ctk.CTkLabel(frame_labels, text="Clave:", font=("Arial", 13), text_color="#1A1A1A").pack(side="left", padx=15)
         ctk.CTkLabel(frame_labels, text="Nombre:", font=("Arial", 13), text_color="#1A1A1A").pack(side="left", padx=15)
-        ctk.CTkLabel(frame_labels, text="Apellido P:", font=("Arial", 13), text_color="#1A1A1A").pack(side="left", padx=15)
+        ctk.CTkLabel(frame_labels, text="Apellido:", font=("Arial", 13), text_color="#1A1A1A").pack(side="left", padx=15)
         ctk.CTkLabel(frame_labels, text="Sueldo:", font=("Arial", 13), text_color="#1A1A1A").pack(side="left", padx=15)
 
-        # Campos
         frame_campos = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_campos.pack(pady=(5, 15))
 
@@ -165,11 +153,9 @@ class Proveedor():
         self.caja_sueldo = ctk.CTkEntry(frame_campos, width=120, height=35, fg_color="white", border_color="#F8C8DC", text_color="#1A1A1A", border_width=2, corner_radius=10)
         self.caja_sueldo.pack(side="left", padx=10)
 
-        # Botón generar clave
         btn_generar_clave = ctk.CTkButton(marco_registro, text="Generar clave", fg_color="#8DCCE3", hover_color="#F8C8DC", text_color="white", width=120, height=30, corner_radius=10, command=self.generar_clave_personal)
         btn_generar_clave.pack(pady=(5, 10))
 
-        # Botones de acción
         frame_botones = ctk.CTkFrame(marco_registro, fg_color="transparent")
         frame_botones.pack(pady=(5, 20))
 
@@ -182,7 +168,6 @@ class Proveedor():
         boton_limpiar = ctk.CTkButton(frame_botones, text="Limpiar campos", fg_color="#6c757d", hover_color="#5a6268", text_color="white", width=180, height=40, corner_radius=10, command=self.limpiar_campos_personal)
         boton_limpiar.pack(side="left", padx=15)
 
-        # Tabla
         marco_tabla = ctk.CTkFrame(marco_principal, border_width=2, border_color="#F8C8DC", corner_radius=15, fg_color="white")
         marco_tabla.pack(fill="both", expand=True, padx=20, pady=10)
 
@@ -191,13 +176,13 @@ class Proveedor():
 
         ctk.CTkLabel(frame_encabezados, text="Clave", width=100, text_color="white", font=("Arial", 12, "bold")).pack(side="left", padx=8, pady=6)
         ctk.CTkLabel(frame_encabezados, text="Nombre", width=120, text_color="white", font=("Arial", 12, "bold")).pack(side="left", padx=8, pady=6)
-        ctk.CTkLabel(frame_encabezados, text="Apellido P", width=120, text_color="white", font=("Arial", 12, "bold")).pack(side="left", padx=8, pady=6)
+        ctk.CTkLabel(frame_encabezados, text="Apellido", width=120, text_color="white", font=("Arial", 12, "bold")).pack(side="left", padx=8, pady=6)
         ctk.CTkLabel(frame_encabezados, text="Sueldo", width=120, text_color="white", font=("Arial", 12, "bold")).pack(side="left", padx=8, pady=6)
 
         self.frame_datos_personal = ctk.CTkFrame(marco_tabla, fg_color="transparent")
         self.frame_datos_personal.pack(pady=5)
 
-        # Cargar personal desde la base de datos
+        self.personal_seleccionado = None
         self.mostrar_personal()
 
         btn_salir = ctk.CTkButton(self.ventanapersonal, text="Salir", fg_color="#8DCCE3", hover_color="#F8C8DC", text_color="white", corner_radius=20, width=120, height=40, command=self.ventanapersonal.destroy)
@@ -233,7 +218,6 @@ class Proveedor():
 
         try:
             cursor = self.conexion.cursor()
-            # Generar un número de cuenta simple
             no_cuenta = "PROV" + str(random.randint(1000, 9999))
             cursor.execute("INSERT INTO Proveedores (NoCuenta, Empresa, Direccion, correoElectronico, telefono) VALUES (?, ?, ?, ?, ?)",
                           (no_cuenta, empresa, None, contacto, telefono if telefono else None))
@@ -243,15 +227,14 @@ class Proveedor():
             self.limpiar_campos_proveedor()
             self.mostrar_proveedores()
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo agregar: {e}")
+            messagebox.showerror("Error", str(e))
 
     def mostrar_proveedores(self):
-        # Limpiar tabla
         for widget in self.frame_datos_proveedores.winfo_children():
             widget.destroy()
 
         cursor = self.conexion.cursor()
-        cursor.execute("SELECT Empresa, telefono, correoElectronico FROM Proveedores")
+        cursor.execute("SELECT NoCuenta, Empresa, telefono, correoElectronico FROM Proveedores")
         proveedores = cursor.fetchall()
         cursor.close()
 
@@ -265,16 +248,36 @@ class Proveedor():
             fila_frame = ctk.CTkFrame(self.frame_datos_proveedores, fg_color=color_fila, corner_radius=5)
             fila_frame.pack(fill="x", padx=5, pady=2)
 
-            empresa = prov[0] if prov[0] else ""
-            telefono = str(prov[1]) if prov[1] else ""
-            contacto = prov[2] if prov[2] else ""
+            empresa = prov[1] if prov[1] else ""
+            telefono = str(prov[2]) if prov[2] else ""
+            contacto = prov[3] if prov[3] else ""
 
             ctk.CTkLabel(fila_frame, text=empresa, width=200, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=20, pady=5)
             ctk.CTkLabel(fila_frame, text=telefono, width=150, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=20, pady=5)
             ctk.CTkLabel(fila_frame, text="", width=200, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=20, pady=5)
             ctk.CTkLabel(fila_frame, text=contacto, width=200, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=20, pady=5)
             
+            # Guardar NoCuenta para eliminar
+            fila_frame.no_cuenta = prov[0]
+            fila_frame.bind("<Button-1>", lambda e, f=fila_frame: self.seleccionar_proveedor(f))
+            
             contador = contador + 1
+
+    def seleccionar_proveedor(self, fila):
+        # Resetear colores
+        for widget in self.frame_datos_proveedores.winfo_children():
+            if hasattr(widget, 'color_original'):
+                widget.configure(fg_color=widget.color_original)
+                for label in widget.winfo_children():
+                    label.configure(text_color="#1A1A1A")
+        
+        # Resaltar fila seleccionada
+        fila.color_original = fila.cget("fg_color")
+        fila.configure(fg_color="#8DCCE3")
+        for label in fila.winfo_children():
+            label.configure(text_color="white")
+        
+        self.proveedor_seleccionado = fila.no_cuenta
 
     def agregar_personal(self):
         clave = self.caja_clave.get().strip()
@@ -290,9 +293,12 @@ class Proveedor():
 
         try:
             cursor = self.conexion.cursor()
-            # Insertar en Usuario primero
-            cursor.execute("INSERT INTO Usuario (Nombre, ApellidoP, ApellidoM) VALUES (?, ?, ?)", (nombre, apellido, ''))
-            # Insertar en Personal
+            cursor.execute("SELECT * FROM Usuario WHERE Nombre = ? AND ApellidoP = ?", (nombre, apellido))
+            usuario_existe = cursor.fetchone()
+            
+            if usuario_existe == None:
+                cursor.execute("INSERT INTO Usuario (Nombre, ApellidoP, ApellidoM) VALUES (?, ?, ?)", (nombre, apellido, ''))
+            
             cursor.execute("INSERT INTO Personal (ClaveAcceso, Nombre, ApellidoP, Sueldo) VALUES (?, ?, ?, ?)",
                           (clave, nombre, apellido, sueldo_valor))
             self.conexion.commit()
@@ -302,10 +308,9 @@ class Proveedor():
             self.mostrar_personal()
             self.generar_clave_personal()
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo agregar: {e}")
+            messagebox.showerror("Error", str(e))
 
     def mostrar_personal(self):
-        # Limpiar tabla
         for widget in self.frame_datos_personal.winfo_children():
             widget.destroy()
 
@@ -324,20 +329,84 @@ class Proveedor():
             fila_frame = ctk.CTkFrame(self.frame_datos_personal, fg_color=color_fila, corner_radius=5)
             fila_frame.pack(fill="x", padx=5, pady=2)
 
-            sueldo_str = f"${emp[3]:.2f}" if emp[3] else "$0.00"
+            clave = emp[0] if emp[0] else ""
+            nombre = emp[1] if emp[1] else ""
+            apellido = emp[2] if emp[2] else ""
+            sueldo_str = "$" + str(emp[3]) if emp[3] else "$0"
 
-            ctk.CTkLabel(fila_frame, text=emp[0], width=100, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
-            ctk.CTkLabel(fila_frame, text=emp[1], width=120, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
-            ctk.CTkLabel(fila_frame, text=emp[2] if emp[2] else "", width=120, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
+            ctk.CTkLabel(fila_frame, text=clave, width=100, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
+            ctk.CTkLabel(fila_frame, text=nombre, width=120, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
+            ctk.CTkLabel(fila_frame, text=apellido, width=120, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
             ctk.CTkLabel(fila_frame, text=sueldo_str, width=120, text_color="#1A1A1A", font=("Arial", 12)).pack(side="left", padx=8, pady=5)
+            
+            # Guardar clave para eliminar
+            fila_frame.clave_acceso = clave
+            fila_frame.bind("<Button-1>", lambda e, f=fila_frame: self.seleccionar_personal(f))
             
             contador = contador + 1
 
+    def seleccionar_personal(self, fila):
+        # Resetear colores
+        for widget in self.frame_datos_personal.winfo_children():
+            if hasattr(widget, 'color_original'):
+                widget.configure(fg_color=widget.color_original)
+                for label in widget.winfo_children():
+                    label.configure(text_color="#1A1A1A")
+        
+        # Resaltar fila seleccionada
+        fila.color_original = fila.cget("fg_color")
+        fila.configure(fg_color="#8DCCE3")
+        for label in fila.winfo_children():
+            label.configure(text_color="white")
+        
+        self.personal_seleccionado = fila.clave_acceso
+
     def eliminar_proveedor(self):
-        messagebox.showinfo("Info", "Seleccione un proveedor de la tabla para eliminar")
+        if self.proveedor_seleccionado == None:
+            messagebox.showwarning("Advertencia", "Primero seleccione un proveedor de la tabla")
+            return
+        
+        respuesta = messagebox.askquestion("Confirmar", "¿Está seguro de eliminar este proveedor?")
+        
+        if respuesta == "yes":
+            try:
+                cursor = self.conexion.cursor()
+                cursor.execute("DELETE FROM Proveedores WHERE NoCuenta = ?", (self.proveedor_seleccionado,))
+                self.conexion.commit()
+                cursor.close()
+                messagebox.showinfo("Éxito", "Proveedor eliminado correctamente")
+                self.proveedor_seleccionado = None
+                self.mostrar_proveedores()
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
 
     def eliminar_personal(self):
-        messagebox.showinfo("Info", "Seleccione un empleado de la tabla para eliminar")
+        if self.personal_seleccionado == None:
+            messagebox.showwarning("Advertencia", "Primero seleccione un empleado de la tabla")
+            return
+        
+        respuesta = messagebox.askquestion("Confirmar", "¿Está seguro de eliminar este empleado?")
+        
+        if respuesta == "yes":
+            try:
+                cursor = self.conexion.cursor()
+                cursor.execute("SELECT Nombre, ApellidoP FROM Personal WHERE ClaveAcceso = ?", (self.personal_seleccionado,))
+                empleado = cursor.fetchone()
+                
+                if empleado != None:
+                    nombre = empleado[0]
+                    apellido = empleado[1]
+                    cursor.execute("DELETE FROM Personal WHERE ClaveAcceso = ?", (self.personal_seleccionado,))
+                    cursor.execute("DELETE FROM Usuario WHERE Nombre = ? AND ApellidoP = ?", (nombre, apellido))
+                
+                self.conexion.commit()
+                cursor.close()
+                messagebox.showinfo("Éxito", "Empleado eliminado correctamente")
+                self.personal_seleccionado = None
+                self.mostrar_personal()
+                self.generar_clave_personal()
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
 
     def limpiar_campos_proveedor(self):
         self.caempresa.delete(0, "end")
