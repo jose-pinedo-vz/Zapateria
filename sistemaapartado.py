@@ -20,7 +20,7 @@ class SistemaApartado():
     def conectar_bd(self):
         config = (
             "DRIVER={ODBC Driver 17 for SQL Server};"
-            "SERVER=LAPTOP-IGOUCGFU;"
+            "SERVER=.;"
             "DATABASE=Zapateria;"
             "Trusted_Connection=yes;"
         )
